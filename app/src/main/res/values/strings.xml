@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="search">search</string>
+    <string name="show_the_word">show meaning</string>
+    <string name="add_new_word">add new word</string>
+    <string name="textview">text view</string>
+    <string name="normal_view">normal view</string>
+    <string name="word">word</string>
+    <string name="meaning">meaning</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="home">home</string>
+    <string name="review">review</string>
+    <string name="extra">extra</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="ali">ali</string>
+    <string name="learned">learned</string>
+</resources>
