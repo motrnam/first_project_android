@@ -1,13 +1,13 @@
 package com.example.myapplication;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,26 +16,30 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.Database.MyRoomDataBase;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MyFragment.MyClickListener,
         MeaningFragment.ListenerOfClas{
     private RecyclerView recyclerView;
-    private ArrayList<Word> words;
+    private List<Word> words;
     private LayoutInflater inflater;
     private LinearLayout layout;
     private ArrayList<Word> currentWord;
+    private MyRoomDataBase roomDataBase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Activity activity = this;
         setContentView(R.layout.activity_main);
         layout = findViewById(R.id.line_lay);
-        words = new ArrayList<>();
 //        words.add(new Word("booksssssssssssss","ketab",3,words.size()));
 //        words.add(new Word("look","negah",2,words.size()));
 //        words.add(new Word("cook","Ghaza",5,words.size()));
+        roomDataBase = MyRoomDataBase.getInstance(this);
+        words = roomDataBase.mainDataAccess().getAll();
         ImageView iv = findViewById(R.id.imageButton2);
         iv.setOnClickListener(view -> {
             addNewWord();
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     private void addNewWord() {
+        Toast.makeText(this,"ali",Toast.LENGTH_LONG).show();
         MyFragment myFragment = new MyFragment();
         myFragment.show(getSupportFragmentManager(),"example");
     }
@@ -120,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
             }
         }
         Word newWord = new Word(word,meaning,0,words.size());
+        roomDataBase.mainDataAccess().insert(newWord);
         words.add(newWord);
         addWord(newWord);
     }

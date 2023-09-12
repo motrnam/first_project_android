@@ -17,11 +17,14 @@ public class Word implements Comparable<Word> {
     public int getNumber() {
         return number;
     }
-    @PrimaryKey
-    private final String wordItself;
+    @ColumnInfo(name = "word_string")
+    public final String wordItself;
     @ColumnInfo(name = "meaning")
-    private final String meaning;
+    public final String meaning;
+    @PrimaryKey(autoGenerate = true)
+    public int id = 0;
     private final int index;
+    @ColumnInfo(name = "number_of_review")
     private int number;
 
     public Word(String wordItself, String meaning, int number, int index) {
