@@ -1,9 +1,10 @@
 package com.example.myapplication;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -35,13 +36,10 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         layout = findViewById(R.id.line_lay);
-//        words.add(new Word("booksssssssssssss","ketab",3,words.size()));
-//        words.add(new Word("look","negah",2,words.size()));
-//        words.add(new Word("cook","Ghaza",5,words.size()));
         roomDataBase = MyRoomDataBase.getInstance(this);
         words = roomDataBase.mainDataAccess().getAll();
-        ImageView iv = findViewById(R.id.imageButton2);
-        iv.setOnClickListener(view -> {
+        ImageButton ib = findViewById(R.id.click_button);
+        ib.setOnClickListener(view1 -> {
             addNewWord();
         });
         EditText input = findViewById(R.id.search_edit_text);
@@ -86,13 +84,10 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     private void updateUI(){
-//        long start = System.currentTimeMillis();
         layout.removeAllViews();
         for (Word word :currentWord){
             addWord(word);
         }
-//        long end = System.currentTimeMillis();
-//        Toast.makeText(this,String.valueOf(end - start),Toast.LENGTH_LONG).show();
     }
 
     private void addNewWord() {
