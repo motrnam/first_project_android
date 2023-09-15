@@ -20,7 +20,7 @@ public class Word implements Comparable<Word> {
     @ColumnInfo(name = "word_string")
     public final String wordItself;
     @ColumnInfo(name = "meaning")
-    public final String meaning;
+    public String meaning;
     @PrimaryKey(autoGenerate = true)
     public int id = 0;
     private final int index;
