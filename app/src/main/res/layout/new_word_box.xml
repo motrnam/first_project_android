@@ -117,7 +117,7 @@
                             android:layout_width="wrap_content"
                             android:id="@+id/review_word"
                             android:layout_height="@dimen/png_height"
-                            android:src="@drawable/my_share_24" />
+                            android:src="@drawable/eye_24" />
 
                     </LinearLayout>
 

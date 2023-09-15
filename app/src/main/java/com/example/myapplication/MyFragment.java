@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +17,7 @@ import androidx.fragment.app.DialogFragment;
 
 public class MyFragment extends DialogFragment {
     private MyClickListener myClickListener;
+    public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 
     @NonNull
     @Override
@@ -26,6 +29,10 @@ public class MyFragment extends DialogFragment {
         Button buttonOk = view.findViewById(R.id.ok_button);
         EditText wordEdit = view.findViewById(R.id.word);
         EditText meaningEdit = view.findViewById(R.id.meaning);
+        ImageView ib = view.findViewById(R.id.get_from_internet);
+        ib.setOnClickListener(view1 -> {
+
+        });
         buttonOk.setOnClickListener(view1 -> {
             myClickListener.ok_clicked(wordEdit.getText().toString(),meaningEdit.getText().toString());
             dismiss();

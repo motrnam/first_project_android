@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,12 +29,12 @@ public class ChangeMeaningFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.add_word_layout,null);
+        View view = inflater.inflate(R.layout.change_meaning_word,null);
         Button okButton = view.findViewById(R.id.ok_button);
         EditText meaningEdit = view.findViewById(R.id.meaning);
-        EditText wordEdit = view.findViewById(R.id.word);
+        TextView tv = view.findViewById(R.id.word_string);
+        tv.setText(this.wordString);
         meaningEdit.setText(this.meaningString);
-        wordEdit.setText(this.wordString);
         okButton.setOnClickListener(view1 -> {
             myClickListener2.btn_click_change(meaningEdit.getText().toString(),word,0);
             dismiss();
