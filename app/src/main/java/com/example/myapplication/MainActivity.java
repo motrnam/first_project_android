@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -14,12 +15,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Database.MyRoomDataBase;
 
+import org.chromium.net.CronetEngine;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements MyFragment.MyClickListener,
         MeaningFragment.ListenerOfClas,ProductAdapter.ClickListener,ChangeMeaningFragment.MyClickListener2{
     private RecyclerView recyclerView;
+    public Executor executor;
     private List<Word> words;
     private LayoutInflater inflater;
     private ArrayList<Word> currentWord;
@@ -29,9 +35,12 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        CronetEngine.Builder myBuilder = new CronetEngine.Builder(this);
+        CronetEngine cronetEngine = myBuilder.build();
+        executor = Executors.newSingleThreadExecutor();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        layout = findViewById(R.id.line_lay);
         roomDataBase = MyRoomDataBase.getInstance(this);
         words = roomDataBase.mainDataAccess().getAll();
         ImageButton ib = findViewById(R.id.click_button);
@@ -61,26 +70,27 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
                 }
             }
         });
+        currentWord = new ArrayList<>();
+        currentWord.clear();
+        for (int i = 0; i < Math.min(50,words.size()); i++) {
+            currentWord.add(words.get(i));
+            Toast.makeText(this,"bad call",Toast.LENGTH_LONG).show();
+        }
         recyclerView = findViewById(R.id.rec);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ProductAdapter(this,words);
+        adapter = new ProductAdapter(this,currentWord);
         recyclerView.setAdapter(adapter);
         inflater = getLayoutInflater();
-        currentWord = new ArrayList<>();
-        for(Word word:words){
-            addWord(word);
-        }
     }
 
     private void updateWord(String input) {
-        currentWord = new ArrayList<>();
-        for (Word word:words){
-            if (word.getWordItself().startsWith(input))
-                currentWord.add(word);
-            if (currentWord.size() >= 10)
-                return;
-        }
+//        for (Word word:words){
+//            if (word.getWordItself().startsWith(input))
+//                currentWord.add(word);
+//            if (currentWord.size() >= 10)
+//                return;
+//        }
     }
 
     private void updateUI(){
@@ -88,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     private void addNewWord() {
+        Log.i("tag tag", String.valueOf(currentWord.size()));
+        Toast.makeText(this,String.valueOf(currentWord.size()) +
+                String.valueOf(words.size()),Toast.LENGTH_LONG).show();
         MyFragment myFragment = new MyFragment();
         myFragment.show(getSupportFragmentManager(),"example");
     }
@@ -111,25 +124,43 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     public void ok_clicked(String word, String meaning) {
         for (Word word1:words){
             if (word1.getMeaning().equals(word)){
-                Toast.makeText(this,"you have already add that work",
-                        Toast.LENGTH_LONG).show();
+//                Toast.makeText(this,"you have already add that work",
+//                        Toast.LENGTH_LONG).show();
                 return;
             }
         }
+//        Toast.makeText(this,String.valueOf(adapter.getItemCount()),Toast.LENGTH_LONG).show();
         Word newWord = new Word(word,meaning,0,words.size());
         roomDataBase.mainDataAccess().insert(newWord);
         words.add(newWord);
-        addWord(newWord);
+        currentWord.add(newWord);
+        adapter.notifyItemInserted(currentWord.size() - 1);
+    }
+
+    @Override
+    public String getMeaningFromInternet(String word,MyFragment myFragment) {
+        if (executor == null)
+            return "@e1";
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+        return null;
     }
 
     @Override
     public void starWord(int indexOF) {
-        if (indexOF < words.size())
-            words.get(indexOF).increaseNumber();
+        if (indexOF < words.size()) {
+            Word w = words.get(indexOF);
+            w.increaseNumber();
+            roomDataBase.mainDataAccess().update(w.id,w.wordItself,w.getMeaning(),getNumber());
+        }
     }
 
     @Override
-    public void deleteWord(int index) {
+    public void deleteWord(int index,Word word) {
 //        Toast.makeText(this,String.valueOf(index),Toast.LENGTH_LONG).show();
         int minus = 0;
         for (Integer i :removed){
@@ -138,8 +169,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         }
         removed.add(index);
         index -= minus;
-        Word word = words.get(index);
-        words.remove(index);
+        words.remove(word);
+        currentWord.remove(word);
         roomDataBase.mainDataAccess().delete(word);
         adapter.notifyItemRemoved(index);
     }
@@ -152,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
                 minus++;
         }
         index -= minus;
+        Toast.makeText(this,String.valueOf(index),Toast.LENGTH_LONG).show();
         ChangeMeaningFragment changeMeaningFragment = new ChangeMeaningFragment(words.
                 get(index).wordItself,words.get(index).meaning,words.get(index));
         changeMeaningFragment.show(getSupportFragmentManager(),"my bag");

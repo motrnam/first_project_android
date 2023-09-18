@@ -17,7 +17,7 @@ import androidx.fragment.app.DialogFragment;
 public class ChangeMeaningFragment extends DialogFragment {
     private String wordString,meaningString;
     private MyClickListener2 myClickListener2;
-    private Word word;
+    private final Word word;
     public ChangeMeaningFragment(String wordString, String meaningString,Word word) {
         this.wordString = wordString;
         this.meaningString = meaningString;

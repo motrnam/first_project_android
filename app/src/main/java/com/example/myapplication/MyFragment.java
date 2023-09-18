@@ -54,5 +54,6 @@ public class MyFragment extends DialogFragment {
 
     public interface MyClickListener{
         void ok_clicked(String word,String meaning);
+        String getMeaningFromInternet(String word,MyFragment myFragment);
     }
 }

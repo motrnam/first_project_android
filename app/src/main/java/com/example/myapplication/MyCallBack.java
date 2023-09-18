@@ -8,7 +8,8 @@ import java.nio.ByteBuffer;
 
 public class MyCallBack extends UrlRequest.Callback{
     @Override
-    public void onRedirectReceived(UrlRequest request, UrlResponseInfo info, String newLocationUrl) throws Exception {
+    public void onRedirectReceived(UrlRequest request, UrlResponseInfo info,
+                                   String newLocationUrl) throws Exception {
         request.followRedirect();
     }
 

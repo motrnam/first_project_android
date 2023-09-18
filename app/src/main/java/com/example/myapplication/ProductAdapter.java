@@ -43,7 +43,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.wordString.setText(word.getWordItself());
         int size = cl.getNumber();
         holder.editImageView.setOnClickListener(view -> cl.editWord(position + size));
-        holder.deleteWord.setOnClickListener(view -> cl.deleteWord(position + size));
+        holder.deleteWord.setOnClickListener(view -> cl.deleteWord(position + size,word));
         holder.cardView.setOnClickListener(view -> cl.clickWord(position + size));
         holder.reviewWord.setOnClickListener(view -> cl.clickWord(position + size));
     }
@@ -55,7 +55,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     }
 
 
-    class ProductViewHolder extends RecyclerView.ViewHolder {
+    static class ProductViewHolder extends RecyclerView.ViewHolder {
 
         TextView wordString;
         CardView cardView;
@@ -74,7 +74,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     }
 
     public interface ClickListener{
-        void deleteWord(int index);
+        void deleteWord(int index,Word theWord);
         void editWord(int index);
         void learnWord(int index);
         void clickWord(int index);
