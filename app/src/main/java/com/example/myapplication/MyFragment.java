@@ -8,15 +8,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import org.chromium.net.UrlRequest;
+
 public class MyFragment extends DialogFragment {
     private MyClickListener myClickListener;
+    private final MainActivity mainActivity;
+    public MyFragment(MainActivity activity){
+        this.mainActivity = activity;
+    }
+    private MyCallBack mcb;
     public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 
     @NonNull
@@ -30,9 +37,26 @@ public class MyFragment extends DialogFragment {
         EditText wordEdit = view.findViewById(R.id.word);
         EditText meaningEdit = view.findViewById(R.id.meaning);
         ImageView ib = view.findViewById(R.id.get_from_internet);
+        mcb = new MyCallBack() {
+            @Override
+            public void onSucceeded(String meaning) {
+                meaningEdit.setText(meaning);
+            }
+            @Override
+            public void onFailed() {
+                Toast.makeText(getContext(),"some problem caused!",Toast.LENGTH_LONG).show();
+            }
+        };
         ib.setOnClickListener(view1 -> {
-
+            CronetApplication cronetApplication = mainActivity.getCronetApplication();
+            UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().
+                    newUrlRequestBuilder(PATH_URL + wordEdit.getText().toString(),mcb,
+                            cronetApplication.getCronetCallbackExecutorService()).addHeader(
+                                    "the header","my value");
+            builderRequest.build().start();
         });
+
+
         buttonOk.setOnClickListener(view1 -> {
             myClickListener.ok_clicked(wordEdit.getText().toString(),meaningEdit.getText().toString());
             dismiss();

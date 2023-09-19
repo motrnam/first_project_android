@@ -45,6 +45,7 @@ public class CronetApplication extends Application {
                         true).setUserAgent("CronetSampleApp").build();
     }
 
+
     private static void createCustomCronetEngine(Context context) {
         Task<?> installTask = CronetProviderInstaller.installProvider(context);
         installTask.addOnCompleteListener(

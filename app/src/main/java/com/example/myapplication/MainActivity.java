@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
             }
         });
         currentWord = new ArrayList<>();
-        currentWord.clear();
         for (int i = 0; i < Math.min(50,words.size()); i++) {
             currentWord.add(words.get(i));
             Toast.makeText(this,"bad call",Toast.LENGTH_LONG).show();
@@ -101,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         Log.i("tag tag", String.valueOf(currentWord.size()));
         Toast.makeText(this,String.valueOf(currentWord.size()) +
                 String.valueOf(words.size()),Toast.LENGTH_LONG).show();
-        MyFragment myFragment = new MyFragment();
+        MyFragment myFragment = new MyFragment(this);
         myFragment.show(getSupportFragmentManager(),"example");
     }
 
@@ -118,6 +117,10 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         MeaningFragment meaningFragment = new MeaningFragment(word.getWordItself(),
                 word.getMeaning(),word.getNumber(),word.getIndex());
         meaningFragment.show(getSupportFragmentManager(),"my fragment");
+    }
+
+    public CronetApplication getCronetApplication() {
+        return ((CronetApplication) getApplication());
     }
 
     @Override
@@ -222,4 +225,6 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         index -= minus;
         adapter.notifyItemChanged(index);
     }
+
+
 }
