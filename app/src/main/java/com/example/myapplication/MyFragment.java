@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +30,7 @@ public class MyFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+//        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> );
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.add_word_layout, null);
@@ -40,7 +42,7 @@ public class MyFragment extends DialogFragment {
         mcb = new MyCallBack() {
             @Override
             public void onSucceeded(String meaning) {
-                meaningEdit.setText(meaning);
+                myClickListener.getHandler().post(() -> meaningEdit.setText(meaning));
             }
             @Override
             public void onFailed() {
@@ -51,8 +53,7 @@ public class MyFragment extends DialogFragment {
             CronetApplication cronetApplication = mainActivity.getCronetApplication();
             UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().
                     newUrlRequestBuilder(PATH_URL + wordEdit.getText().toString(),mcb,
-                            cronetApplication.getCronetCallbackExecutorService()).addHeader(
-                                    "the header","my value");
+                            cronetApplication.getCronetCallbackExecutorService());
             builderRequest.build().start();
         });
 
@@ -79,5 +80,6 @@ public class MyFragment extends DialogFragment {
     public interface MyClickListener{
         void ok_clicked(String word,String meaning);
         String getMeaningFromInternet(String word,MyFragment myFragment);
+        Handler getHandler();
     }
 }

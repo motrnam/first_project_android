@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
+import android.app.Application;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -31,15 +33,17 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     private ArrayList<Word> currentWord;
     private MyRoomDataBase roomDataBase;
     private ProductAdapter adapter;
+    private CronetApplication cronetApplication;
     private ArrayList<Integer> removed = new ArrayList<>(100);
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CronetEngine.Builder myBuilder = new CronetEngine.Builder(this);
-        CronetEngine cronetEngine = myBuilder.build();
-        executor = Executors.newSingleThreadExecutor();
-
         super.onCreate(savedInstanceState);
+        handler = new Handler();
+        cronetApplication = new CronetApplication(this);
+        cronetApplication.onCreate();
+        executor = Executors.newSingleThreadExecutor();
         setContentView(R.layout.activity_main);
         roomDataBase = MyRoomDataBase.getInstance(this);
         words = roomDataBase.mainDataAccess().getAll();
@@ -120,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     public CronetApplication getCronetApplication() {
-        return ((CronetApplication) getApplication());
+        return cronetApplication;
     }
 
     @Override
@@ -151,6 +155,11 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
             }
         });
         return null;
+    }
+
+    @Override
+    public Handler getHandler() {
+        return handler;
     }
 
     @Override
@@ -194,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 
     @Override
     public void learnWord(int index) {
-        Toast.makeText(this,"learn",Toast.LENGTH_LONG).show();
+//        Toast.makeText(this,"learn",Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -225,6 +234,4 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         index -= minus;
         adapter.notifyItemChanged(index);
     }
-
-
 }

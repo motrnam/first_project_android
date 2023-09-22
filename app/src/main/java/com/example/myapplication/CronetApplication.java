@@ -19,16 +19,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class CronetApplication extends Application {
+public class CronetApplication {
     private CronetEngine cronetEngine;
     private ExecutorService cronetCallbackExecutorService;
-    public final AtomicInteger imagesToLoadCeiling = new AtomicInteger();
-
-    @Override
+    MainActivity activity;
+    public CronetApplication(MainActivity mainActivity){
+        this.activity = mainActivity;
+    }
     public void onCreate() {
-        super.onCreate();
-        cronetEngine = createDefaultCronetEngine(this);
-        cronetCallbackExecutorService = Executors.newSingleThreadExecutor();
+        cronetEngine = createDefaultCronetEngine(activity);
+        cronetCallbackExecutorService = Executors.newFixedThreadPool(4);
     }
 
     public CronetEngine getCronetEngine() {
