@@ -1,6 +1,6 @@
 package com.example.myapplication;
 
-import android.app.Application;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Database.MyRoomDataBase;
 
-import org.chromium.net.CronetEngine;
+import org.chromium.net.UrlRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,9 @@ import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity implements MyFragment.MyClickListener,
         MeaningFragment.ListenerOfClas,ProductAdapter.ClickListener,ChangeMeaningFragment.MyClickListener2{
     private RecyclerView recyclerView;
+    public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
     public Executor executor;
     private List<Word> words;
-    private LayoutInflater inflater;
     private ArrayList<Word> currentWord;
     private MyRoomDataBase roomDataBase;
     private ProductAdapter adapter;
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ProductAdapter(this,currentWord);
         recyclerView.setAdapter(adapter);
-        inflater = getLayoutInflater();
+        LayoutInflater inflater = getLayoutInflater();
     }
 
     private void updateWord(String input) {
@@ -146,14 +146,6 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 
     @Override
     public String getMeaningFromInternet(String word,MyFragment myFragment) {
-        if (executor == null)
-            return "@e1";
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
         return null;
     }
 
@@ -214,7 +206,26 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
                 minus++;
         }
         index -= minus;
-        openFragment(words.get(index));
+//        openFragment(words.get(index));
+        Word currentWord = words.get(index);
+        Intent i = new Intent(MainActivity.this,MainActivity2.class);
+        String theString;
+        MyCallBack mcb = new MyCallBack() {
+            @Override
+            public void onSucceeded(String meaning) {
+                i.putExtra("word",meaning);
+                startActivity(i);
+            }
+
+            @Override
+            public void onFailed() {
+
+            }
+        };
+        UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().
+                newUrlRequestBuilder(PATH_URL + currentWord.wordItself.toString(),mcb,
+                        cronetApplication.getCronetCallbackExecutorService());
+        builderRequest.build().start();
     }
 
     @Override

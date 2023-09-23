@@ -45,7 +45,7 @@ public abstract class MyCallBack extends UrlRequest.Callback{
         info.getAllHeadersAsList();
         byte[] bodyBytes = bytesReceived.toByteArray();
         String result = new String(bodyBytes,StandardCharsets.UTF_8);
-        onSucceeded(FunctionsStatic.getMainMeaning(result));
+        onSucceeded(result);
     }
 
     @Override

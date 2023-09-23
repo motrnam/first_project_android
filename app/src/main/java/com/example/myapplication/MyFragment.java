@@ -42,7 +42,8 @@ public class MyFragment extends DialogFragment {
         mcb = new MyCallBack() {
             @Override
             public void onSucceeded(String meaning) {
-                myClickListener.getHandler().post(() -> meaningEdit.setText(meaning));
+                String finalMeaning = FunctionsStatic.getMainMeaning(meaning);
+                myClickListener.getHandler().post(() -> meaningEdit.setText(finalMeaning));
             }
             @Override
             public void onFailed() {
