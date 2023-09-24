@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,17 +31,25 @@ public class MainActivity2 extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.my_recyclerView);
         Intent i = getIntent();
         String wordString = i.getStringExtra("word");
+        String theMeaning = i.getStringExtra("meaning");
         if (wordString != null){
-            List<WordFromInternet> fwfi = (FunctionsStatic.getFinalByString(wordString)).all;
-            List<WordDefinition> definitions = new ArrayList<>();
-            for (WordFromInternet word:fwfi){
-                for (WordMeaning wordMeaning:word.meanings)
-                    definitions.addAll(wordMeaning.definitions);
+            try {
+                List<WordFromInternet> fwfi = (FunctionsStatic.getFinalByString(wordString)).all;
+                List<WordDefinition> definitions = new ArrayList<>();
+                for (WordFromInternet word : fwfi) {
+                    for (WordMeaning wordMeaning : word.meanings)
+                        definitions.addAll(wordMeaning.definitions);
+                }
+                String result = fwfi.get(0).word.toString() + " : " + theMeaning;
+                textViewWord.setText(result);
+                WordAdapter adapter = new WordAdapter(definitions, this);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                recyclerView.setAdapter(adapter);
+            }catch (Exception e){
+                Toast.makeText(this,"some bug stopped the program please contact me "
+                        ,Toast.LENGTH_LONG).show();
+                finish();
             }
-            textViewWord.setText(fwfi.get(0).word);
-            WordAdapter adapter = new WordAdapter(definitions,this);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            recyclerView.setAdapter(adapter);
         }else
             finish();
     }

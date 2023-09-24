@@ -7,4 +7,6 @@
     <color name="colorPing">#009966</color>
     <color name="fragment_color">#DEE48F</color>
     <color name="color_fab_orange">#f97910</color>
+    <color name="syn_color">#6CFF5C</color>
+    <color name="ant">#FF1F1F</color>
 </resources>

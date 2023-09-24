@@ -13,6 +13,8 @@ public class WordDefinition {
     }
 
     public String getExample() {
+        if (example == null)
+            return "example: ";
         return "example: "+example;
     }
 
@@ -46,7 +48,7 @@ public class WordDefinition {
 
     public String getAntonymsInStringFormat() {
         if (antonyms == null || antonyms.isEmpty())
-            return "";
+            return "Antonyms: ";
         if (antonyms.size() == 1)
             return "Antonyms: " + antonyms.get(0);
         StringBuilder resultOfOutput = new StringBuilder();

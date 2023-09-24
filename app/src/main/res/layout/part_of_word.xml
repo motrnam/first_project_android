@@ -19,10 +19,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:maxLines="2"
+                android:layout_marginTop="8dp"
+                android:maxLines="3"
                 android:text="@android:string/defaultVoiceMailAlphaTag"
                 app:layout_constraintStart_toStartOf="parent"
+                android:textSize="20sp"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -41,6 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
+                android:textColor="@color/syn_color"
                 android:text="TextView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/example_word" />
@@ -51,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
+                android:textColor="@color/ant"
                 android:text="TextView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/syn" />

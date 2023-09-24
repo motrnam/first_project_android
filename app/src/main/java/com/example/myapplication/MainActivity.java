@@ -209,12 +209,16 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 //        openFragment(words.get(index));
         Word currentWord = words.get(index);
         Intent i = new Intent(MainActivity.this,MainActivity2.class);
-        String theString;
         MyCallBack mcb = new MyCallBack() {
             @Override
             public void onSucceeded(String meaning) {
-                i.putExtra("word",meaning);
-                startActivity(i);
+                if (meaning.startsWith("{\"title\":\"No Definitions Found\"")){
+                    openFragment(currentWord);
+                }else {
+                    i.putExtra("word", meaning);
+                    i.putExtra("meaning", currentWord.getMeaning());
+                    startActivity(i);
+                }
             }
 
             @Override
