@@ -25,7 +25,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements MyFragment.MyClickListener,
-        MeaningFragment.ListenerOfClas,ProductAdapter.ClickListener,ChangeMeaningFragment.MyClickListener2{
+        MeaningFragment.ListenerOfClas, ProductAdapter.ClickListener,
+        ChangeMeaningFragment.MyClickListener2, AskMeaningFragment.TheListener {
     private RecyclerView recyclerView;
     public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
     public Executor executor;
@@ -65,24 +66,24 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.toString().equals("qwe")){
+                if (editable.toString().equals("qwe")) {
                     addNewWord();
                     input.setText("");
-                }else {
+                } else {
                     updateWord(editable.toString());
                     updateUI();
                 }
             }
         });
         currentWord = new ArrayList<>();
-        for (int i = 0; i < Math.min(50,words.size()); i++) {
+        for (int i = 0; i < Math.min(50, words.size()); i++) {
             currentWord.add(words.get(i));
-            Toast.makeText(this,"bad call",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "bad call", Toast.LENGTH_LONG).show();
         }
         recyclerView = findViewById(R.id.rec);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ProductAdapter(this,currentWord);
+        adapter = new ProductAdapter(this, currentWord);
         recyclerView.setAdapter(adapter);
         LayoutInflater inflater = getLayoutInflater();
     }
@@ -96,19 +97,19 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 //        }
     }
 
-    private void updateUI(){
+    private void updateUI() {
 
     }
 
     private void addNewWord() {
         Log.i("tag tag", String.valueOf(currentWord.size()));
-        Toast.makeText(this,String.valueOf(currentWord.size()) +
-                String.valueOf(words.size()),Toast.LENGTH_LONG).show();
+        Toast.makeText(this, String.valueOf(currentWord.size()) +
+                String.valueOf(words.size()), Toast.LENGTH_LONG).show();
         MyFragment myFragment = new MyFragment(this);
-        myFragment.show(getSupportFragmentManager(),"example");
+        myFragment.show(getSupportFragmentManager(), "example");
     }
 
-    private void addWord(Word word){
+    private void addWord(Word word) {
 //        View cardView =  inflater.inflate(R.layout.word_box,null);
 //        TextView textView = cardView.findViewById(R.id.textView2);
 //        textView.setText(word.getWordItself());
@@ -119,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 
     private void openFragment(Word word) {
         MeaningFragment meaningFragment = new MeaningFragment(word.getWordItself(),
-                word.getMeaning(),word.getNumber(),word.getIndex());
-        meaningFragment.show(getSupportFragmentManager(),"my fragment");
+                word.getMeaning(), word.getNumber(), word.getIndex());
+        meaningFragment.show(getSupportFragmentManager(), "my fragment");
     }
 
     public CronetApplication getCronetApplication() {
@@ -129,15 +130,15 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 
     @Override
     public void ok_clicked(String word, String meaning) {
-        for (Word word1:words){
-            if (word1.getMeaning().equals(word)){
-//                Toast.makeText(this,"you have already add that work",
-//                        Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
+//        for (Word word1:words){
+//            if (word1.getMeaning().equals(word)){
+////                Toast.makeText(this,"you have already add that work",
+////                        Toast.LENGTH_LONG).show();
+//                return;
+//            }
+//        }
 //        Toast.makeText(this,String.valueOf(adapter.getItemCount()),Toast.LENGTH_LONG).show();
-        Word newWord = new Word(word,meaning,0,words.size());
+        Word newWord = new Word(word, meaning, 0, words.size());
         roomDataBase.mainDataAccess().insert(newWord);
         words.add(newWord);
         currentWord.add(newWord);
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     @Override
-    public String getMeaningFromInternet(String word,MyFragment myFragment) {
+    public String getMeaningFromInternet(String word, MyFragment myFragment) {
         return null;
     }
 
@@ -159,15 +160,15 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         if (indexOF < words.size()) {
             Word w = words.get(indexOF);
             w.increaseNumber();
-            roomDataBase.mainDataAccess().update(w.id,w.wordItself,w.getMeaning(),getNumber());
+            roomDataBase.mainDataAccess().update(w.id, w.wordItself, w.getMeaning(), getNumber());
         }
     }
 
     @Override
-    public void deleteWord(int index,Word word) {
+    public void deleteWord(int index, Word word) {
 //        Toast.makeText(this,String.valueOf(index),Toast.LENGTH_LONG).show();
         int minus = 0;
-        for (Integer i :removed){
+        for (Integer i : removed) {
             if (index >= i)
                 minus++;
         }
@@ -182,15 +183,15 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     @Override
     public void editWord(int index) {
         int minus = 0;
-        for (Integer i :removed){
+        for (Integer i : removed) {
             if (index >= i)
                 minus++;
         }
         index -= minus;
-        Toast.makeText(this,String.valueOf(index),Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, String.valueOf(index), Toast.LENGTH_LONG).show();
         ChangeMeaningFragment changeMeaningFragment = new ChangeMeaningFragment(words.
-                get(index).wordItself,words.get(index).meaning,words.get(index));
-        changeMeaningFragment.show(getSupportFragmentManager(),"my bag");
+                get(index).wordItself, words.get(index).meaning, words.get(index));
+        changeMeaningFragment.show(getSupportFragmentManager(), "my bag");
     }
 
     @Override
@@ -201,20 +202,20 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     @Override
     public void clickWord(int index) {
         int minus = 0;
-        for (Integer i :removed){
+        for (Integer i : removed) {
             if (index >= i)
                 minus++;
         }
         index -= minus;
 //        openFragment(words.get(index));
         Word currentWord = words.get(index);
-        Intent i = new Intent(MainActivity.this,MainActivity2.class);
+        Intent i = new Intent(MainActivity.this, MainActivity2.class);
         MyCallBack mcb = new MyCallBack() {
             @Override
             public void onSucceeded(String meaning) {
-                if (meaning.startsWith("{\"title\":\"No Definitions Found\"")){
+                if (meaning.startsWith("{\"title\":\"No Definitions Found\"")) {
                     openFragment(currentWord);
-                }else {
+                } else {
                     i.putExtra("word", meaning);
                     i.putExtra("meaning", currentWord.getMeaning());
                     startActivity(i);
@@ -227,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
             }
         };
         UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().
-                newUrlRequestBuilder(PATH_URL + currentWord.wordItself.toString(),mcb,
+                newUrlRequestBuilder(PATH_URL + currentWord.wordItself.toString(), mcb,
                         cronetApplication.getCronetCallbackExecutorService());
         builderRequest.build().start();
     }
@@ -238,15 +239,23 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     @Override
-    public void btn_click_change(String newMeaning, Word word1,int index) {
+    public void btn_click_change(String newMeaning, Word word1, int index) {
         word1.meaning = newMeaning;
-        roomDataBase.mainDataAccess().update(word1.id,word1.wordItself,newMeaning,word1.getNumber());
+        roomDataBase.mainDataAccess().update(word1.id, word1.wordItself, newMeaning, word1.getNumber());
         int minus = 0;
-        for (Integer i :removed){
+        for (Integer i : removed) {
             if (index >= i)
                 minus++;
         }
         index -= minus;
         adapter.notifyItemChanged(index);
+    }
+
+    @Override
+    public void addWord(String word, String meaning) {
+        if (meaning == null || meaning.equals("something else")){
+
+        }else
+            ok_clicked(word, meaning);
     }
 }

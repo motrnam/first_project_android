@@ -18,6 +18,9 @@ import androidx.fragment.app.DialogFragment;
 
 import org.chromium.net.UrlRequest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MyFragment extends DialogFragment {
     private MyClickListener myClickListener;
     private final MainActivity mainActivity;
@@ -42,14 +45,27 @@ public class MyFragment extends DialogFragment {
         mcb = new MyCallBack() {
             @Override
             public void onSucceeded(String meaning) {
-                String finalMeaning = FunctionsStatic.getMainMeaning(meaning);
-                myClickListener.getHandler().post(() -> meaningEdit.setText(finalMeaning));
+                List<WordFromInternet> fwfi = (FunctionsStatic.getFinalByString(meaning)).all;
+                List<WordDefinition> definitions = new ArrayList<>();
+                List<String> stringList = new ArrayList<>();
+                for (WordFromInternet word : fwfi) {
+                    for (WordMeaning wordMeaning : word.meanings)
+                        definitions.addAll(wordMeaning.definitions);
+                }
+                for (WordDefinition definition:definitions){
+                    stringList.add(definition.definition);
+                }
+                AskMeaningFragment theFragment = new AskMeaningFragment(stringList,
+                        wordEdit.getText().toString(),mainActivity);
+                theFragment.show(mainActivity.getSupportFragmentManager(),"this tag");
+                dismiss();
             }
             @Override
             public void onFailed() {
                 Toast.makeText(getContext(),"some problem caused!",Toast.LENGTH_LONG).show();
             }
         };
+
         ib.setOnClickListener(view1 -> {
             CronetApplication cronetApplication = mainActivity.getCronetApplication();
             UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().
