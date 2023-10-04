@@ -7,4 +7,5 @@ public class WordFromInternet {
     String phonetic;
     String origin;
     List<WordMeaning> meanings;
+    List<Phonetic> phonetics;
 }

@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 
             @Override
             public void onFailed() {
-
+                openFragment(currentWord);
             }
         };
         UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().

@@ -5,6 +5,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
+        android:padding="12dp"
         android:layout_height="wrap_content" >
 
         <TextView
