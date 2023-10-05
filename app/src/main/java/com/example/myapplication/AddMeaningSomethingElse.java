@@ -14,16 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-public class ChangeMeaningFragment extends DialogFragment {
-    private String wordString,meaningString;
-    private MyClickListener2 myClickListener2;
-    private final Word word;
-    public ChangeMeaningFragment(String wordString, String meaningString,Word word) {
-        this.wordString = wordString;
-        this.meaningString = meaningString;
+public class AddMeaningSomethingElse extends DialogFragment {
+    private final String word;
+    ChangeMeaningFragment.MyClickListener2 myClickListener2;
+    public AddMeaningSomethingElse(String word){
         this.word = word;
     }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -32,15 +28,14 @@ public class ChangeMeaningFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.change_meaning_word,null);
         Button okButton = view.findViewById(R.id.ok_button);
         EditText meaningEdit = view.findViewById(R.id.meaning);
+        meaningEdit.setHint("meaning");
         TextView tv = view.findViewById(R.id.word_string);
-        tv.setText(this.wordString);
-        meaningEdit.setText(this.meaningString);
-        okButton.setText(R.string.change);
+        tv.setText(this.word);
         okButton.setOnClickListener(view1 -> {
-            myClickListener2.btn_click_change(meaningEdit.getText().toString(),word,0);
+            myClickListener2.btn_click_change(word + "@" +
+                    meaningEdit.getText().toString(),null,-1);
             dismiss();
         });
-        builder.setView(view);
         return builder.create();
     }
 
@@ -48,13 +43,9 @@ public class ChangeMeaningFragment extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            myClickListener2 = (MyClickListener2) context;
+            myClickListener2 = (ChangeMeaningFragment.MyClickListener2) context;
         }catch (ClassCastException castException){
-            throw new ClassCastException("you should implement this interface!");
+            throw new ClassCastException("please implement the required class!");
         }
-    }
-
-    public interface MyClickListener2{
-        void btn_click_change(String newMeaning,Word word1,int index);
     }
 }

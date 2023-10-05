@@ -1,15 +1,10 @@
 package com.example.myapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -17,19 +12,33 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.chromium.net.UrlRequest;
-import org.chromium.net.UrlResponseInfo;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
-public class MainActivity2 extends AppCompatActivity {
+public class MeaningActivity extends AppCompatActivity {
     private LayoutInflater inflater;
-    private static final String THE_PATH = "https://api.dictionaryapi.dev/media/pronunciations/en/";
+    private static final String BASE_URL = "https://api.dictionaryapi.dev/media/pronunciations/en/";
+    private ConnectivityManager conMgr;
+    private final static Executor executor = Executors.newSingleThreadExecutor();
+    private TextToSpeech textToSpeech;
+    private boolean stateOf = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                stateOf = (i == TextToSpeech.SUCCESS);
+            }
+        });
         setContentView(R.layout.activity_main2);
         LinearLayout up = findViewById(R.id.up_view);
         inflater = getLayoutInflater();
@@ -56,21 +65,15 @@ public class MainActivity2 extends AppCompatActivity {
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 recyclerView.setAdapter(adapter);
                 ImageButton ib = view.findViewById(R.id.speaker);
-                ib.setOnClickListener(view1 ->{
-                    SecondCallBack secondCallBack = new SecondCallBack() {
-                        @Override
-                        public void onFailed() {
-                            Toast.makeText(MainActivity2.this,"unable to receive meaning",
+                ib.setOnClickListener(view1 -> {
+                    executor.execute(() -> {
+                        if (conMgr.getActiveNetworkInfo() == null){
+                            Toast.makeText(MeaningActivity.this,"No access to internet",
                                     Toast.LENGTH_LONG).show();
+                        }else {
+                            speak(wordString);
                         }
-
-                        @Override
-                        public void onSucceeded(UrlRequest request, UrlResponseInfo info, byte[] bodyBytes) {
-                            final Bitmap bitmap = BitmapFactory.decodeByteArray(bodyBytes,
-                                    0,bodyBytes.length);
-//                            MediaPlayer mediaPlayer = MediaPlayer.create(MainActivity2.this,)
-                        }
-                    };
+                    });
                 });
             }catch (Exception e){
                 Toast.makeText(this,"some bug stopped the program please contact me "
@@ -79,5 +82,20 @@ public class MainActivity2 extends AppCompatActivity {
             }
         }else
             finish();
+    }
+
+    private void speak(String word){
+        if (stateOf){
+            textToSpeech.speak(word,TextToSpeech.QUEUE_FLUSH,null);
+        }else {
+            Toast.makeText(this,"some error",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (textToSpeech != null)
+            textToSpeech.shutdown();
     }
 }

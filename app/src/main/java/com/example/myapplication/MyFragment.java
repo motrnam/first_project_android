@@ -24,8 +24,10 @@ import java.util.List;
 public class MyFragment extends DialogFragment {
     private MyClickListener myClickListener;
     private final MainActivity mainActivity;
-    public MyFragment(MainActivity activity){
+    private final boolean hasAccessToInternet;
+    public MyFragment(MainActivity activity,boolean hasAccessToInternet){
         this.mainActivity = activity;
+        this.hasAccessToInternet = hasAccessToInternet;
     }
     private MyCallBack mcb;
     public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
@@ -45,6 +47,12 @@ public class MyFragment extends DialogFragment {
         mcb = new MyCallBack() {
             @Override
             public void onSucceeded(String meaning) {
+                if (meaning == null || meaning.startsWith("g")){
+                    Toast.makeText(getContext(),"no meaning in the internet",Toast.LENGTH_LONG)
+                            .show();
+                    return;
+                }
+                try {
                 List<WordFromInternet> fwfi = (FunctionsStatic.getFinalByString(meaning)).all;
                 List<WordDefinition> definitions = new ArrayList<>();
                 List<String> stringList = new ArrayList<>();
@@ -59,6 +67,9 @@ public class MyFragment extends DialogFragment {
                         wordEdit.getText().toString(),mainActivity);
                 theFragment.show(mainActivity.getSupportFragmentManager(),"this tag");
                 dismiss();
+                }catch (Exception e){
+                    Toast.makeText(getContext(),"some problem",Toast.LENGTH_LONG).show();
+                }
             }
             @Override
             public void onFailed() {
@@ -67,11 +78,14 @@ public class MyFragment extends DialogFragment {
         };
 
         ib.setOnClickListener(view1 -> {
-            CronetApplication cronetApplication = mainActivity.getCronetApplication();
-            UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().
-                    newUrlRequestBuilder(PATH_URL + wordEdit.getText().toString(),mcb,
-                            cronetApplication.getCronetCallbackExecutorService());
-            builderRequest.build().start();
+            if (hasAccessToInternet) {
+                CronetApplication cronetApplication = mainActivity.getCronetApplication();
+                UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().
+                        newUrlRequestBuilder(PATH_URL + wordEdit.getText().toString(), mcb,
+                                cronetApplication.getCronetCallbackExecutorService());
+                builderRequest.build().start();
+            }else
+                Toast.makeText(mainActivity,"no Internet connection",Toast.LENGTH_LONG).show();
         });
 
 
