@@ -137,7 +137,7 @@
                             android:id="@+id/edit_word"
                             android:layout_width="@dimen/png_height"
                             android:layout_height="@dimen/png_height"
-                            android:src="@drawable/ic_edit_24dp" />
+                            android:src="@drawable/volume_up_24" />
 
                     </LinearLayout>
 

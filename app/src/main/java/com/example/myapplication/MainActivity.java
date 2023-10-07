@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -41,10 +42,16 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     private final ArrayList<Integer> removed = new ArrayList<>(100);
     private Handler handler;
     private ConnectivityManager conMgr;
+    private TextToSpeech tts;
+    private boolean isSuccess = false;
+    private Word currentViewWord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        tts = new TextToSpeech(this,i -> {
+            if (i == TextToSpeech.SUCCESS) isSuccess = true;
+        });
         conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         handler = new Handler();
         cronetApplication = new CronetApplication(this);
@@ -180,9 +187,15 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
                 minus++;
         }
         index -= minus;
-        ChangeMeaningFragment changeMeaningFragment = new ChangeMeaningFragment(words.
-                get(index).wordItself, words.get(index).meaning, words.get(index));
-        changeMeaningFragment.show(getSupportFragmentManager(), "my bag");
+        String stringOfWord = words.get(index).wordItself;
+//        ChangeMeaningFragment changeMeaningFragment = new ChangeMeaningFragment(words.
+//                get(index).wordItself, words.get(index).meaning, words.get(index));
+//        changeMeaningFragment.show(getSupportFragmentManager(), "my bag");
+        if (isSuccess){
+            tts.speak(stringOfWord,TextToSpeech.QUEUE_FLUSH,null);
+        }else {
+            Toast.makeText(this,"unable to do the the task",Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -199,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         }
         index -= minus;
         Word currentWord = words.get(index);
+        currentViewWord = currentWord;
         Intent i = new Intent(MainActivity.this, MeaningActivity.class);
         MyCallBack mcb = new MyCallBack() {
             @Override
@@ -267,5 +281,19 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     @Override
     public void press(String input) {
         Toast.makeText(this,input,Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (tts != null)
+            tts.shutdown();
+        super.onDestroy();
+    }
+
+    public void updateWord(String newMeaning,boolean state){
+        if (currentViewWord != null){
+            roomDataBase.mainDataAccess().update(currentViewWord.id,currentViewWord.
+                    getWordItself(),newMeaning,currentViewWord.getNumber());
+        }
     }
 }
