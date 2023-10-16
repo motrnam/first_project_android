@@ -23,7 +23,7 @@
                 android:maxLines="3"
                 android:text="@android:string/defaultVoiceMailAlphaTag"
                 app:layout_constraintStart_toStartOf="parent"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView

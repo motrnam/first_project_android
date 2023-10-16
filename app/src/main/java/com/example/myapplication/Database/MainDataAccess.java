@@ -22,7 +22,8 @@ public interface MainDataAccess {
     @Query("UPDATE word_table SET word_string = :wordString, meaning = :meaning, number_of_review = :number WHERE ID = :id")
     void update(int id,String wordString,String meaning,int number);
 
-
+    @Query("UPDATE word_table SET internet_meaning = :internetMeaning WHERE ID = :id")
+    void update(int id,String internetMeaning);
 
     @Delete
     void delete(Word word);

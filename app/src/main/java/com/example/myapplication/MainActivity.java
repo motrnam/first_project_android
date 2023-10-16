@@ -139,6 +139,9 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     @Override
     public void ok_clicked(String word, String meaning) {
         Word newWord = new Word(word, meaning, 0, words.size());
+        if(!FunctionsStatic.internet_meaning.startsWith("a#"))
+            newWord.setInternetMeaning(FunctionsStatic.internet_meaning);
+        FunctionsStatic.internet_meaning = "a##";
         roomDataBase.mainDataAccess().insert(newWord);
         words.add(newWord);
         currentWord.add(newWord);
@@ -214,27 +217,55 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         Word currentWord = words.get(index);
         currentViewWord = currentWord;
         Intent i = new Intent(MainActivity.this, MeaningActivity.class);
-        MyCallBack mcb = new MyCallBack() {
-            @Override
-            public void onSucceeded(String meaning) {
-                if (meaning.startsWith("{\"title\":\"No Definitions Found\"")) {
-                    openFragment(currentWord);
-                } else {
-                    i.putExtra("word", meaning);
-                    i.putExtra("meaning", currentWord.getMeaning());
-                    startActivity(i);
+        if(currentWord.getInternetMeaning().startsWith("nothing")) {
+            MyCallBack mcb = new MyCallBack() {
+                @Override
+                public void onSucceeded(String meaning) {
+                    if (meaning.startsWith("{\"title\":\"No Definitions Found\"")) {
+                        openFragment(currentWord);
+                        FunctionsStatic.internet_meaning = "a##";
+                    } else {
+                        i.putExtra("word", meaning);
+                        i.putExtra("meaning", currentWord.getMeaning());
+                        i.putExtra("word_id", currentWord.id);
+                        i.putExtra("number_of", currentWord.getNumber());
+                        handler.post(() -> {
+                           roomDataBase.mainDataAccess().update(currentViewWord.id,meaning);//saves unsaved stage
+                        });
+                        FunctionsStatic.internet_meaning = meaning;
+                        MyHolder.idOfWord = currentWord.id;
+                        MyHolder.delta = 0;
+                        MyHolder.changingWord = currentWord.getWordItself();
+                        MyHolder.isChangedMeaning = false;
+                        startActivity(i);
+                    }
                 }
-            }
 
-            @Override
-            public void onFailed() {
-                openFragment(currentWord);
-            }
-        };
-        UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().
-                newUrlRequestBuilder(PATH_URL + currentWord.wordItself, mcb,
-                        cronetApplication.getCronetCallbackExecutorService());
-        builderRequest.build().start();
+                @Override
+                public void onFailed() {
+                    openFragment(currentWord);
+                    Toast.makeText(MainActivity.this,"some string",Toast.LENGTH_LONG).show();
+                }
+            };
+            UrlRequest.Builder builderRequest = cronetApplication.getCronetEngine().
+                    newUrlRequestBuilder(PATH_URL + currentWord.wordItself, mcb,
+                            cronetApplication.getCronetCallbackExecutorService());
+            builderRequest.build().start();
+        } else if (currentWord.getInternetMeaning().startsWith("{\"title\":")) {
+            openFragment(currentWord);
+            Toast.makeText(MainActivity.this,"another string",Toast.LENGTH_LONG).show();
+        }else {
+            i.putExtra("word", currentWord.getInternetMeaning());
+            i.putExtra("meaning", currentWord.getMeaning());
+            i.putExtra("word_id", currentWord.id);
+            i.putExtra("number_of", currentWord.getNumber());
+            FunctionsStatic.internet_meaning = currentWord.getInternetMeaning();
+            MyHolder.idOfWord = currentWord.id;
+            MyHolder.delta = 0;
+            MyHolder.changingWord = currentWord.getWordItself();
+            MyHolder.isChangedMeaning = false;
+            startActivity(i);
+        }
     }
 
     @Override
@@ -253,6 +284,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
                 words.add(word1);
                 adapter.notifyItemInserted(index);
             }
+            if(! FunctionsStatic.internet_meaning.startsWith("a#") && word1 != null)
+                word1.setInternetMeaning(FunctionsStatic.internet_meaning);
             roomDataBase.mainDataAccess().insert(word1);
             return;
         }
@@ -284,6 +317,12 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // To do
+    }
+
+    @Override
     protected void onDestroy() {
         if (tts != null)
             tts.shutdown();
@@ -296,4 +335,5 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
                     getWordItself(),newMeaning,currentViewWord.getNumber());
         }
     }
+
 }

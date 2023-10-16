@@ -66,6 +66,7 @@ public class MyFragment extends DialogFragment {
                 AskMeaningFragment theFragment = new AskMeaningFragment(stringList,
                         wordEdit.getText().toString(),mainActivity);
                 theFragment.show(mainActivity.getSupportFragmentManager(),"this tag");
+                FunctionsStatic.internet_meaning = meaning;
                 dismiss();
                 }catch (Exception e){
                     Toast.makeText(getContext(),"some problem",Toast.LENGTH_LONG).show();

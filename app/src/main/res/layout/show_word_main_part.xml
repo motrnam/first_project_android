@@ -29,7 +29,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
                 android:textSize="28sp"
@@ -50,12 +49,35 @@
                 android:id="@+id/imageButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="10dp"
                 android:contentDescription="@string/edit"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/speaker"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_edit_24dp" />
+
+            <ProgressBar
+                android:id="@+id/learn_amount"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="36dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.25"
+                app:layout_constraintStart_toStartOf="@+id/theWordItself"
+                app:layout_constraintTop_toBottomOf="@+id/speaker" />
+
+            <ImageButton
+                android:id="@+id/learn_the_word"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@string/learned"
+                android:src="@drawable/sharp_article_24"
+                app:layout_constraintStart_toEndOf="@+id/speaker"
+                app:layout_constraintTop_toBottomOf="@+id/theWordItself" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>

@@ -6,11 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,12 +35,17 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
     private TextToSpeech textToSpeech;
     private boolean stateOfTTS = false;
     private TextView textViewWord;
+    private Handler handler;
     private MainActivity last;
+    private int wordId,numberOf;
+    private ImageButton inc;
+    private ProgressBar pb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        handler = new Handler(Looper.getMainLooper());
         textToSpeech = new TextToSpeech(this, i -> stateOfTTS = (i == TextToSpeech.SUCCESS));
         setContentView(R.layout.activity_main2);
         LinearLayout up = findViewById(R.id.up_view);
@@ -48,6 +57,10 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
         Intent i = getIntent();
         String wordString = i.getStringExtra("word");
         String theMeaning = i.getStringExtra("meaning");
+        wordId = i.getIntExtra("word_id",0);
+        numberOf = i.getIntExtra("number_of",0);
+        pb = findViewById(R.id.learn_amount);
+        pb.setProgress(((int) numberOf * 100 /7),true);
         if (wordString != null) {
             try {
                 List<WordFromInternet> fwfi = (FunctionsStatic.getFinalByString(wordString)).all;
@@ -65,27 +78,26 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 recyclerView.setAdapter(adapter);
                 ImageButton ib = view.findViewById(R.id.speaker);
+                inc = findViewById(R.id.learn_the_word);
                 ImageButton myIB = findViewById(R.id.imageButton);
-                myIB.setOnClickListener(view1 -> {
-                    openFragment(fwfi.get(0).word);
-                });
-                ib.setOnClickListener(view1 -> {
-                    executor.execute(() -> {
-                        if (conMgr.getActiveNetworkInfo() == null) {
-                            Toast.makeText(MeaningActivity.this, "No access to internet",
-                                    Toast.LENGTH_LONG).show();
-                        } else {
-                            speak(fwfi.get(0).word);//word itself
-                        }
-                    });
-                });
+                myIB.setOnClickListener(view1 -> openFragment(fwfi.get(0).word));
+                ib.setOnClickListener(view1 -> executor.execute(() -> {
+                    if (conMgr.getActiveNetworkInfo() == null) {
+                        handler.post(() -> Toast.makeText(MeaningActivity.this, "No access to internet",
+                                Toast.LENGTH_LONG).show());
+
+                    } else {
+                        speak(fwfi.get(0).word);//word itself
+                    }
+                }));
             } catch (Exception e) {
                 Toast.makeText(this, "some bug stopped the program please contact me "
                         , Toast.LENGTH_LONG).show();
                 finish();
             }
             try {// this class should only called after MainActivity
-                last = (MainActivity) getParent();
+                last = (MainActivity) getParent();//last null
+                Log.i("tag", "onCreate::: " + (last == null));
             } catch (ClassCastException castException) {
                 finish();
             }
@@ -126,6 +138,8 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
         if (last != null && newMeaning != null) {
             last.updateWord(newMeaning, false);
             textViewWord.setText(wordString + " : " + newMeaning);
+        }else {
+            Toast.makeText(this,"error",Toast.LENGTH_LONG).show();
         }
     }
 }

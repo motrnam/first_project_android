@@ -14,6 +14,10 @@ public class Word implements Comparable<Word> {
         return meaning;
     }
 
+    public void setInternetMeaning(String internetMeaning) {
+        this.internetMeaning = internetMeaning;
+    }
+
     public int getNumber() {
         return number;
     }
@@ -24,8 +28,14 @@ public class Word implements Comparable<Word> {
     @PrimaryKey(autoGenerate = true)
     public int id = 0;
     private final int index;
+    @ColumnInfo(name = "internet_meaning")
+    public String internetMeaning = "nothing";
     @ColumnInfo(name = "number_of_review")
     private int number;
+
+    public String getInternetMeaning() {
+        return internetMeaning;
+    }
 
     public Word(String wordItself, String meaning, int number, int index) {
         this.wordItself = wordItself;
