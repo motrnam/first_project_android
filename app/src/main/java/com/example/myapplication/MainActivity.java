@@ -45,10 +45,13 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     private TextToSpeech tts;
     private boolean isSuccess = false;
     private Word currentViewWord;
+    private Intent i2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        i2 = getIntent();
+        String startingLetter = i2.getStringExtra("starting_word");
         tts = new TextToSpeech(this,i -> {
             if (i == TextToSpeech.SUCCESS) isSuccess = true;
         });
@@ -90,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         goToSetting.setOnClickListener(view -> {
             openSettingFragment();
         });
+        input.setText(startingLetter);
     }
 
     private void openSettingFragment() {

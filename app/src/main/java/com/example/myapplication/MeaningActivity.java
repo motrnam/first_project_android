@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.Database.MyRoomDataBase;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -40,12 +42,14 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
     private int wordId,numberOf;
     private ImageButton inc;
     private ProgressBar pb;
+    private MyRoomDataBase roomDataBase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        roomDataBase = MyRoomDataBase.getInstance(this);
         conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        handler = new Handler(Looper.getMainLooper());
+        handler = new Handler();
         textToSpeech = new TextToSpeech(this, i -> stateOfTTS = (i == TextToSpeech.SUCCESS));
         setContentView(R.layout.activity_main2);
         LinearLayout up = findViewById(R.id.up_view);
@@ -125,7 +129,8 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("label", text);
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(this, "definition copied to clipboard", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "definition copied to clipboard successfully",
+                Toast.LENGTH_LONG).show();
     }
 
     private void openFragment(String wordItself) {
@@ -135,11 +140,9 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
 
     @Override
     public void btn_click_change(String newMeaning, String wordString) {
-        if (last != null && newMeaning != null) {
-            last.updateWord(newMeaning, false);
-            textViewWord.setText(wordString + " : " + newMeaning);
-        }else {
-            Toast.makeText(this,"error",Toast.LENGTH_LONG).show();
-        }
+        if (wordId != 0){
+            roomDataBase.mainDataAccess().update(wordId,wordString,newMeaning,numberOf);
+        }else
+            Toast.makeText(this,"unable to delete the word",Toast.LENGTH_LONG).show();
     }
 }
