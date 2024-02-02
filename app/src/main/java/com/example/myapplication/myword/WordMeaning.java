@@ -1,10 +1,12 @@
-package com.example.myapplication;
+package com.example.myapplication.myword;
+
+import com.example.myapplication.myword.WordDefinition;
 
 import java.util.List;
 
 public class WordMeaning {
-    String partOfSpeech;
-    List<WordDefinition>  definitions;
+    public String  partOfSpeech;
+    public List<WordDefinition>  definitions;
 
     public String getPartOfSpeech() {
         return partOfSpeech;

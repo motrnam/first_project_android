@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.example.myapplication.Word;
+import com.example.myapplication.myword.Word;
 
 @Database(entities = Word.class,version = 1,exportSchema = false)
 public abstract class MyRoomDataBase extends RoomDatabase {

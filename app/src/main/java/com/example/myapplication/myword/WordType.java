@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.myword;
 
 public enum WordType {
     NOUN("noun"),

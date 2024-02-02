@@ -30,7 +30,6 @@
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginVertical="4dp"
                 android:paddingHorizontal="22dp"
-                app:cardBackgroundColor="#BEDBED"
                 app:cardCornerRadius="14dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout

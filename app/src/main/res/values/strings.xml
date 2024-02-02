@@ -21,4 +21,10 @@
     <string name="get_from_internet">get from Internet</string>
     <string name="change">change</string>
     <string name="edit">edit</string>
+    <string name="speak">speak</string>
+    <string name="add_word_or_list">add word or list</string>
+    <string name="your_cards">your cards</string>
+    <string name="add_category">add category</string>
+    <string name="category">Category</string>
+    <string name="menus">menus</string>
 </resources>

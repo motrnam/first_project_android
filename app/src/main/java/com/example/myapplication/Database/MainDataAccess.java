@@ -7,7 +7,7 @@ import androidx.room.Query;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
-import com.example.myapplication.Word;
+import com.example.myapplication.myword.Word;
 
 import java.util.List;
 

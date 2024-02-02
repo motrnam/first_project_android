@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +22,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Database.MyRoomDataBase;
+import com.example.myapplication.fragments.ChangeMeaningFragmentCopy;
+import com.example.myapplication.myword.WordAdapter;
+import com.example.myapplication.myword.WordDefinition;
+import com.example.myapplication.myword.WordFromInternet;
+import com.example.myapplication.myword.WordMeaning;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +36,14 @@ import java.util.concurrent.Executors;
 public class MeaningActivity extends AppCompatActivity implements WordAdapter.Listener,
         ChangeMeaningFragmentCopy.MyClickListener2 {
     private LayoutInflater inflater;
-    private ConnectivityManager conMgr;
+    private ConnectivityManager conMgr;// test vim mode
     private final static Executor executor = Executors.newSingleThreadExecutor();
     private TextToSpeech textToSpeech;
     private boolean stateOfTTS = false;
     private TextView textViewWord;
     private Handler handler;
     private MainActivity last;
-    private int wordId,numberOf;
+    private int wordId, numberOf;
     private ImageButton inc;
     private ProgressBar pb;
     private MyRoomDataBase roomDataBase;
@@ -61,10 +65,10 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
         Intent i = getIntent();
         String wordString = i.getStringExtra("word");
         String theMeaning = i.getStringExtra("meaning");
-        wordId = i.getIntExtra("word_id",0);
-        numberOf = i.getIntExtra("number_of",0);
+        wordId = i.getIntExtra("word_id", 0);
+        numberOf = i.getIntExtra("number_of", 0);
         pb = findViewById(R.id.learn_amount);
-        pb.setProgress(((int) numberOf * 100 /7),true);
+        pb.setProgress(((int) numberOf * 100 / 7), true);
         if (wordString != null) {
             try {
                 List<WordFromInternet> fwfi = (FunctionsStatic.getFinalByString(wordString)).all;
@@ -111,7 +115,7 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
 
     private void speak(String word) {
         if (stateOfTTS) {
-            textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null);
+            textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null);// no other choice
         } else {
             Toast.makeText(this, "some error", Toast.LENGTH_LONG).show();
         }
@@ -121,7 +125,7 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
     protected void onDestroy() {
         super.onDestroy();
         if (textToSpeech != null)
-            textToSpeech.shutdown();
+            textToSpeech.shutdown();// some
     }
 
     @Override
@@ -140,9 +144,9 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
 
     @Override
     public void btn_click_change(String newMeaning, String wordString) {
-        if (wordId != 0){
-            roomDataBase.mainDataAccess().update(wordId,wordString,newMeaning,numberOf);
-        }else
-            Toast.makeText(this,"unable to delete the word",Toast.LENGTH_LONG).show();
+        if (wordId != 0) {
+            roomDataBase.mainDataAccess().update(wordId, wordString, newMeaning, numberOf);
+        } else
+            Toast.makeText(this, "unable to delete the word", Toast.LENGTH_LONG).show();
     }
 }

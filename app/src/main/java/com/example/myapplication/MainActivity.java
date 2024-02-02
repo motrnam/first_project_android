@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -19,6 +20,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Database.MyRoomDataBase;
+import com.example.myapplication.fragments.AddMeaningSomethingElse;
+import com.example.myapplication.fragments.AskMeaningFragment;
+import com.example.myapplication.fragments.ChangeMeaningFragment;
+import com.example.myapplication.fragments.ListFragment;
+import com.example.myapplication.fragments.MeaningFragment;
+import com.example.myapplication.fragments.MyFragment;
+import com.example.myapplication.myword.Word;
 
 import org.chromium.net.UrlRequest;
 
@@ -31,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         MeaningFragment.ListenerOfClas, ProductAdapter.ClickListener,
         ChangeMeaningFragment.MyClickListener2, AskMeaningFragment.TheListener,
         ListFragment.DoTheAction {
+    private SharedPreferences sharedPreferences;
     private RecyclerView recyclerView;
     public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
     public Executor executor;
@@ -45,11 +54,18 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     private TextToSpeech tts;
     private boolean isSuccess = false;
     private Word currentViewWord;
+    private String cathegory = "main";
     private Intent i2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getSharedPreferences("my_shared", MODE_PRIVATE);
+        String category =sharedPreferences.getString("category", "nothing");
+        if (category.equals("nothing")){
+            sharedPreferences.edit().putString("category","main").apply();
+            category = "main";
+        }
         i2 = getIntent();
         String startingLetter = i2.getStringExtra("starting_word");
         tts = new TextToSpeech(this,i -> {
@@ -114,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         for (Word word : words) {
             if (word.getWordItself().startsWith(input))
                 currentWord.add(word);
-            if (currentWord.size() >= 100)
+            if (currentWord.size() >= 5000)
                 break;
         }
         adapter.notifyDataSetChanged();// no other choice
@@ -125,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         Log.i("tag tag", String.valueOf(currentWord.size()));
         NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
         boolean state = (netInfo == null);
-        MyFragment myFragment = new MyFragment(this, !state);
+        MyFragment myFragment = new MyFragment(this, !state,cathegory);
         myFragment.show(getSupportFragmentManager(), "example");
     }
 
@@ -141,8 +157,13 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     @Override
-    public void ok_clicked(String word, String meaning) {
+    public void ok_clicked(String word, String meaning,String category) {
         Word newWord = new Word(word, meaning, 0, words.size());
+        if (!category.equals("no_change")){
+            newWord.category = category;
+        }else if (cathegory == null){
+            newWord.category = "main";
+        }
         if(!FunctionsStatic.internet_meaning.startsWith("a#"))
             newWord.setInternetMeaning(FunctionsStatic.internet_meaning);
         FunctionsStatic.internet_meaning = "a##";
@@ -233,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
                         i.putExtra("meaning", currentWord.getMeaning());
                         i.putExtra("word_id", currentWord.id);
                         i.putExtra("number_of", currentWord.getNumber());
+                        i.putExtra("category","main");// temporary ;need to be changed
                         handler.post(() -> {
                            roomDataBase.mainDataAccess().update(currentViewWord.id,meaning);//saves unsaved stage
                         });
@@ -312,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
             AddMeaningSomethingElse meaningSomethingElse = new AddMeaningSomethingElse(word);
             meaningSomethingElse.show(getSupportFragmentManager(), "no tag");
         } else
-            ok_clicked(word, meaning);
+            ok_clicked(word, meaning,"no_change");
     }
 
     @Override

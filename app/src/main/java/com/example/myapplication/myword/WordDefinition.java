@@ -1,12 +1,12 @@
-package com.example.myapplication;
+package com.example.myapplication.myword;
 
 import java.util.List;
 
 public class WordDefinition {
-    String definition;
-    String example;
-    List<String> synonyms;
-    List<String> antonyms;
+    public String definition;
+    public String example;
+    public List<String> synonyms;
+    public List<String> antonyms;
 
     public String getDefinition() {
         return definition;

@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.myword;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -25,6 +25,8 @@ public class Word implements Comparable<Word> {
     public final String wordItself;
     @ColumnInfo(name = "meaning")
     public String meaning;
+    @ColumnInfo(name = "category")
+    public String category = "nothing";
     @PrimaryKey(autoGenerate = true)
     public int id = 0;
     private final int index;

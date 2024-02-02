@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,12 +14,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-public class ChangeMeaningFragmentCopy extends DialogFragment {
+import com.example.myapplication.R;
+import com.example.myapplication.myword.Word;
+
+public class ChangeMeaningFragment extends DialogFragment {
     private String wordString,meaningString;
     private MyClickListener2 myClickListener2;
-    public ChangeMeaningFragmentCopy(String wordString, String meaningString) {
+    private final Word word;
+    public ChangeMeaningFragment(String wordString, String meaningString,Word word) {
         this.wordString = wordString;
         this.meaningString = meaningString;
+        this.word = word;
     }
 
     @NonNull
@@ -35,7 +40,7 @@ public class ChangeMeaningFragmentCopy extends DialogFragment {
         meaningEdit.setText(this.meaningString);
         okButton.setText(R.string.change);
         okButton.setOnClickListener(view1 -> {
-            myClickListener2.btn_click_change(meaningEdit.getText().toString(),wordString);
+            myClickListener2.btn_click_change(meaningEdit.getText().toString(),word,0);
             dismiss();
         });
         builder.setView(view);
@@ -53,6 +58,6 @@ public class ChangeMeaningFragmentCopy extends DialogFragment {
     }
 
     public interface MyClickListener2{
-        void btn_click_change(String newMeaning,String word);
+        void btn_click_change(String newMeaning,Word word1,int index);
     }
 }
