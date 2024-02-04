@@ -16,7 +16,7 @@ import androidx.fragment.app.DialogFragment;
 import com.example.myapplication.R;
 
 public class AddCategory extends DialogFragment {
-    private MyClickListener myClickListener;
+    private MyClickListenerAddCategory myClickListener;
     private String[] categories_array;
     public AddCategory(String categories){
         categories_array = categories.split("#");
@@ -32,7 +32,7 @@ public class AddCategory extends DialogFragment {
         EditText editText = view.findViewById(R.id.category_edit_text);
         Button button = view.findViewById(R.id.add_category_button);
         button.setOnClickListener(view1 -> {
-            myClickListener.btn_click(editText.getText().toString());
+            myClickListener.btn_click_add(editText.getText().toString());
             dismiss();
         });
         builder.setView(view);
@@ -43,14 +43,14 @@ public class AddCategory extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            myClickListener = (MyClickListener) context;
+            myClickListener = (MyClickListenerAddCategory) context;
         } catch (ClassCastException castException) {
             throw new ClassCastException("please implement the required class! "
                     + context.getClass().getName());
         }
     }
 
-    public interface MyClickListener{
-        void btn_click(String category);
+    public interface MyClickListenerAddCategory {
+        void btn_click_add(String category);
     }
 }

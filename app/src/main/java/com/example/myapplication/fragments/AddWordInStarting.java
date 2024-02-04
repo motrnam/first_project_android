@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -19,9 +18,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.myapplication.CronetApplication;
 import com.example.myapplication.FunctionsStatic;
-import com.example.myapplication.MainActivity;
 import com.example.myapplication.MyCallBack;
 import com.example.myapplication.R;
+import com.example.myapplication.StartingActivity;
 import com.example.myapplication.myword.WordDefinition;
 import com.example.myapplication.myword.WordFromInternet;
 import com.example.myapplication.myword.WordMeaning;
@@ -32,15 +31,15 @@ import org.chromium.net.UrlRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFragment extends DialogFragment {
+public class AddWordInStarting extends DialogFragment {
     public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
-    private final MainActivity mainActivity;
+    private final StartingActivity mainActivity;
     private final boolean hasAccessToInternet;
     private MyClickListener myClickListener;
     private String selectedCategory;
     private String[] categories = {"main"};
     private MyCallBack mcb;
-    public MyFragment(MainActivity activity, boolean hasAccessToInternet, String category) {
+    public AddWordInStarting(StartingActivity activity, boolean hasAccessToInternet, String category) {
         this.mainActivity = activity;
         this.hasAccessToInternet = hasAccessToInternet;
         if (category != null)
@@ -138,6 +137,5 @@ public class MyFragment extends DialogFragment {
 
     public interface MyClickListener {
         void ok_clicked(String word, String meaning, String category);
-        Handler getHandler();
     }
 }

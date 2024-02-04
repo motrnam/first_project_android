@@ -20,14 +20,12 @@ public class MeaningFragment extends DialogFragment {
     private final String word;
     private final String meaning;
     private int number;
-    private final int indexOf;
     private ListenerOfClas listenerOfClass;
 
-    public MeaningFragment(String word, String meaning,int number,int indexOf){
+    public MeaningFragment(String word, String meaning,int number){
         this.word = word;
         this.meaning = meaning;
         this.number = number;
-        this.indexOf = indexOf;
     }
     @Override
     public void onAttach(@NonNull Context context) {
@@ -53,7 +51,7 @@ public class MeaningFragment extends DialogFragment {
         pb.setProgress(number * 100 / 7);
         Button buttonAdd = view.findViewById(R.id.learnBtn);
         buttonAdd.setOnClickListener(view1 -> {
-            listenerOfClass.starWord(indexOf);
+            listenerOfClass.starWord(word);
             MeaningFragment.this.dismiss();
         });
         builder.setView(view);
@@ -61,6 +59,6 @@ public class MeaningFragment extends DialogFragment {
     }
 
     public interface ListenerOfClas{
-        void starWord(int indexOF);
+        void starWord(String word);
     }
 }

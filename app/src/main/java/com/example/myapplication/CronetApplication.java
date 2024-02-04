@@ -1,6 +1,5 @@
 package com.example.myapplication;
 
-import android.app.Application;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -16,14 +15,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class CronetApplication {
     private CronetEngine cronetEngine;
     private ExecutorService cronetCallbackExecutorService;
-    MainActivity activity;
-    public CronetApplication(MainActivity mainActivity){
+    Context activity;
+    public CronetApplication(Context mainActivity){
         this.activity = mainActivity;
     }
     public void onCreate() {

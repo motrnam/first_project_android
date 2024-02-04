@@ -54,12 +54,13 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     private TextToSpeech tts;
     private boolean isSuccess = false;
     private Word currentViewWord;
-    private String cathegory = "main";
+    private String category = "main";
     private Intent i2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String state = getIntent().getStringExtra("state");
         sharedPreferences = getSharedPreferences("my_shared", MODE_PRIVATE);
         String category =sharedPreferences.getString("category", "nothing");
         if (category.equals("nothing")){
@@ -79,6 +80,18 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         setContentView(R.layout.activity_main);
         roomDataBase = MyRoomDataBase.getInstance(this);
         words = roomDataBase.mainDataAccess().getAll();
+
+        if (state != null && !state.equals("search")) {
+            List<Word> words1 = roomDataBase.mainDataAccess().getAll();
+            for (Word word : words1) {
+                if (word.category != null) {
+                    if (!word.category.equals(category)) {
+                        words.remove(word);
+                    }
+                }
+            }
+        }
+
         ImageButton ib = findViewById(R.id.click_button);
         ib.setOnClickListener(view1 -> addNewWord());
         EditText input = findViewById(R.id.search_edit_text);
@@ -141,14 +154,14 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         Log.i("tag tag", String.valueOf(currentWord.size()));
         NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
         boolean state = (netInfo == null);
-        MyFragment myFragment = new MyFragment(this, !state,cathegory);
+        MyFragment myFragment = new MyFragment(this, !state, category);
         myFragment.show(getSupportFragmentManager(), "example");
     }
 
 
     private void openFragment(Word word) {
         MeaningFragment meaningFragment = new MeaningFragment(word.getWordItself(),
-                word.getMeaning(), word.getNumber(), word.getIndex());
+                word.getMeaning(), word.getNumber());
         meaningFragment.show(getSupportFragmentManager(), "my fragment");
     }
 
@@ -161,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         Word newWord = new Word(word, meaning, 0, words.size());
         if (!category.equals("no_change")){
             newWord.category = category;
-        }else if (cathegory == null){
+        }else if (this.category == null){
             newWord.category = "main";
         }
         if(!FunctionsStatic.internet_meaning.startsWith("a#"))
@@ -173,10 +186,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         adapter.notifyItemInserted(currentWord.size() - 1);
     }
 
-    @Override
-    public String getMeaningFromInternet(String word, MyFragment myFragment) {
-        return null;
-    }
+
 
     @Override
     public Handler getHandler() {
@@ -184,11 +194,13 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     @Override
-    public void starWord(int indexOF) {
-        if (indexOF < words.size()) {
-            Word w = words.get(indexOF);
-            w.increaseNumber();
-            roomDataBase.mainDataAccess().update(w.id, w.wordItself, w.getMeaning(), getNumber());
+    public void starWord(String word) {
+        for (Word word1 : words) {
+            if (word1.getWordItself().equals(word)) {
+                word1.increaseNumber();
+                roomDataBase.mainDataAccess().update(word1.id, word1.wordItself, word1.meaning, word1.getNumber());
+                break;
+            }
         }
     }
 

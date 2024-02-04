@@ -2,11 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="4dp"
     android:maxHeight="101dp"
     android:maxWidth="140dp"
     android:layout_width="100dp"
     android:layout_height="100dp"
-    android:background="@drawable/border"
+    android:background="@android:color/background_dark"
     >
 
     <androidx.cardview.widget.CardView
@@ -30,7 +32,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/desciption"
+                android:id="@+id/description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"

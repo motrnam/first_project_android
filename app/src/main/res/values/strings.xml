@@ -25,6 +25,11 @@
     <string name="add_word_or_list">add word or list</string>
     <string name="your_cards">your cards</string>
     <string name="add_category">add category</string>
+    <string name="add_word">Add word</string>
+    <string name="add_category_hint">Add category</string>
+    <string name="my_categories">My categories</string>
+    <string name="pick_randomly">Pick random</string>
+    <string name="about">About</string>
     <string name="category">Category</string>
     <string name="menus">menus</string>
 </resources>

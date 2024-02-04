@@ -55,7 +55,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
     public class WordViewHolder extends RecyclerView.ViewHolder {
         TextView def, example, syn, ac;
-
         public WordViewHolder(@NonNull View itemView) {
             super(itemView);
             def = itemView.findViewById(R.id.def_word_box);
