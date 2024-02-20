@@ -1,5 +1,7 @@
 package com.example.myapplication.myword;
 
+import android.util.Log;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -15,7 +17,7 @@ public class Word implements Comparable<Word> {
     }
 
     public void setInternetMeaning(String internetMeaning) {
-        this.internetMeaning = internetMeaning;
+        this.internetMeaning = internetMeaning; // save
     }
 
     public int getNumber() {
@@ -26,7 +28,7 @@ public class Word implements Comparable<Word> {
     @ColumnInfo(name = "meaning")
     public String meaning;
     @ColumnInfo(name = "category")
-    public String category = "nothing";
+    public String category;
     @PrimaryKey(autoGenerate = true)
     public int id = 0;
     private final int index;
@@ -39,11 +41,19 @@ public class Word implements Comparable<Word> {
         return internetMeaning;
     }
 
-    public Word(String wordItself, String meaning, int number, int index) {
+    public Word(String wordItself, String meaning, int number, int index,String category) {
         this.wordItself = wordItself;
         this.meaning = meaning;
         this.number = number;
         this.index = index;
+        this.category = category;
+        if (category == null){
+            this.category = "main";
+            Log.d("word_word", "Word: "+ wordItself+" has no category");
+        }else {
+            this.category = category;
+            Log.d("word_word", "Word:" + wordItself + " has category " + category);
+        }
     }
 
     public int getIndex() {
@@ -60,5 +70,9 @@ public class Word implements Comparable<Word> {
         if (word.wordItself.equals(this.wordItself))
             return 0;
         return this.wordItself.compareTo(word.wordItself);
+    }
+
+    public String getCategory() {
+        return category;
     }
 }

@@ -6,4 +6,5 @@ public class MyHolder {
     public static int delta = 0;
     public static String meaning = "";
     public static boolean isChangedMeaning = false;
+    public static String category = "";
 }

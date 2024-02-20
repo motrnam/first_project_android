@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,7 +24,6 @@ import com.example.myapplication.R;
 import com.example.myapplication.myword.WordDefinition;
 import com.example.myapplication.myword.WordFromInternet;
 import com.example.myapplication.myword.WordMeaning;
-import com.google.android.material.button.MaterialButtonToggleGroup;
 
 import org.chromium.net.UrlRequest;
 
@@ -113,16 +111,6 @@ public class MyFragment extends DialogFragment {
         });
         Button cancel = view.findViewById(R.id.cancel_button);
         cancel.setOnClickListener(view1 -> dismiss());
-        MaterialButtonToggleGroup toggleButton = view.findViewById(R.id.toggleGroup);
-        for (String category : categories) {
-            ToggleButton button = new ToggleButton(getContext());
-            button.setText(category);
-            button.setOnClickListener(view1 -> {
-                selectedCategory = category;
-                button.setChecked(true);
-            });
-            toggleButton.addView(button);
-        }
         return builder.create();
     }
 
@@ -138,6 +126,5 @@ public class MyFragment extends DialogFragment {
 
     public interface MyClickListener {
         void ok_clicked(String word, String meaning, String category);
-        Handler getHandler();
     }
 }

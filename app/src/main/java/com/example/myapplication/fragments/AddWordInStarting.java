@@ -52,7 +52,7 @@ public class AddWordInStarting extends DialogFragment {
 //        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> );
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.add_word_layout, null);
+        View view = inflater.inflate(R.layout.add_word_layout_first, null);
         builder.setView(view);
         Button buttonOk = view.findViewById(R.id.ok_button);
         EditText wordEdit = view.findViewById(R.id.word);
@@ -107,21 +107,11 @@ public class AddWordInStarting extends DialogFragment {
 
         buttonOk.setOnClickListener(view1 -> {
             myClickListener.ok_clicked(wordEdit.getText().toString(), meaningEdit.getText().
-                    toString(), selectedCategory);
+                    toString(), "main");
             dismiss();
         });
         Button cancel = view.findViewById(R.id.cancel_button);
         cancel.setOnClickListener(view1 -> dismiss());
-        MaterialButtonToggleGroup toggleButton = view.findViewById(R.id.toggleGroup);
-        for (String category : categories) {
-            ToggleButton button = new ToggleButton(getContext());
-            button.setText(category);
-            button.setOnClickListener(view1 -> {
-                selectedCategory = category;
-                button.setChecked(true);
-            });
-            toggleButton.addView(button);
-        }
         return builder.create();
     }
 

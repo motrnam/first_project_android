@@ -68,7 +68,7 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
         wordId = i.getIntExtra("word_id", 0);
         numberOf = i.getIntExtra("number_of", 0);
         pb = findViewById(R.id.learn_amount);
-        pb.setProgress(((int) numberOf * 100 / 7), true);
+        pb.setProgress((numberOf * 100 / 7), true);
         if (wordString != null) {
             try {
                 List<WordFromInternet> fwfi = (FunctionsStatic.getFinalByString(wordString)).all;
@@ -101,12 +101,15 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
             } catch (Exception e) {
                 Toast.makeText(this, "some bug stopped the program please contact me "
                         , Toast.LENGTH_LONG).show();
+                Log.d("word_word", "onCreate: " + e.getMessage() + e.toString());
+                Log.d("word_word", "onCreate: " + e.getCause());
                 finish();
             }
             try {// this class should only called after MainActivity
                 last = (MainActivity) getParent();//last null
                 Log.i("tag", "onCreate::: " + (last == null));
             } catch (ClassCastException castException) {
+                Log.e("word_word", "onCreate: ", castException);
                 finish();
             }
         } else
@@ -115,7 +118,7 @@ public class MeaningActivity extends AppCompatActivity implements WordAdapter.Li
 
     private void speak(String word) {
         if (stateOfTTS) {
-            textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null);// no other choice
+            textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null, null);
         } else {
             Toast.makeText(this, "some error", Toast.LENGTH_LONG).show();
         }

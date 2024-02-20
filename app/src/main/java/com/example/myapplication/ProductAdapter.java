@@ -21,7 +21,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private final Context mCtx;
     private final List<Word> wordList;
     private final ClickListener cl;
-    public ProductAdapter(Context mCtx, List<Word> wordList) {
+    private boolean canDelete = true;
+    public ProductAdapter(Context mCtx, List<Word> wordList) { // for mainActivity
         this.mCtx = mCtx;
         this.wordList = wordList;
         try {
@@ -30,7 +31,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             throw new ClassCastException("implement this class!!");
         }
     }
-
+    public ProductAdapter(Context mCtx, List<Word> wordList,boolean canDelete) {// for searchActivity
+        this.mCtx = mCtx;
+        this.wordList = wordList;
+        this.canDelete = false;
+        try {
+            cl = (ClickListener) mCtx;
+        }catch (ClassCastException castException){
+            throw new ClassCastException("implement this class!!");
+        }
+    }
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -57,7 +67,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     }
 
 
-    static class ProductViewHolder extends RecyclerView.ViewHolder {
+    class ProductViewHolder extends RecyclerView.ViewHolder {
 
         TextView wordString;
         CardView cardView;
@@ -72,6 +82,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             deleteWord = itemView.findViewById(R.id.delete_word);
             cardView = itemView.findViewById(R.id.card_view);
             reviewWord = itemView.findViewById(R.id.review_word);
+            if(!canDelete){
+                deleteWord.setVisibility(View.GONE);
+            }
         }
     }
 
