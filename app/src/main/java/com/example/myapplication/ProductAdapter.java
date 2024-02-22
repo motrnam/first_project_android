@@ -21,7 +21,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private final Context mCtx;
     private final List<Word> wordList;
     private final ClickListener cl;
-    private boolean canDelete = true;
+    public static boolean canDelete = true;
     public ProductAdapter(Context mCtx, List<Word> wordList) { // for mainActivity
         this.mCtx = mCtx;
         this.wordList = wordList;
@@ -34,7 +34,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public ProductAdapter(Context mCtx, List<Word> wordList,boolean canDelete) {// for searchActivity
         this.mCtx = mCtx;
         this.wordList = wordList;
-        this.canDelete = false;
+        ProductAdapter.canDelete = false;
         try {
             cl = (ClickListener) mCtx;
         }catch (ClassCastException castException){
@@ -67,7 +67,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     }
 
 
-    class ProductViewHolder extends RecyclerView.ViewHolder {
+    static class ProductViewHolder extends RecyclerView.ViewHolder {
 
         TextView wordString;
         CardView cardView;

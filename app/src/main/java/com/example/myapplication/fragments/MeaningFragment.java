@@ -19,7 +19,7 @@ import com.example.myapplication.R;
 public class MeaningFragment extends DialogFragment {
     private final String word;
     private final String meaning;
-    private int number;
+    private final int number;
     private ListenerOfClas listenerOfClass;
 
     public MeaningFragment(String word, String meaning,int number){

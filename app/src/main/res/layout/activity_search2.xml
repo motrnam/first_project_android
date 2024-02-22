@@ -75,17 +75,5 @@
 
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/click_button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="@color/white"
-        android:clickable="true"
-        android:contentDescription="@string/add"
-        app:srcCompat="@drawable/plus_sign" />
-
 
 </RelativeLayout>

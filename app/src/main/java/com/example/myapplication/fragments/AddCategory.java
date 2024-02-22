@@ -17,10 +17,6 @@ import com.example.myapplication.R;
 
 public class AddCategory extends DialogFragment {
     private MyClickListenerAddCategory myClickListener;
-    private String[] categories_array;
-    public AddCategory(String categories){
-        categories_array = categories.split("#");
-    }
 
     @NonNull
     @Override

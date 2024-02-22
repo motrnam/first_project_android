@@ -14,7 +14,7 @@ import com.example.myapplication.R;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>{
     String[] categories;
     private final Context c;
-    private MyCategoryFragment myCategoryFragment;
+    private final MyCategoryFragment myCategoryFragment;
     public CategoryAdapter(String[] categories, Context c,MyCategoryFragment myCategoryFragment){
         this.categories = categories;
         this.c = c;

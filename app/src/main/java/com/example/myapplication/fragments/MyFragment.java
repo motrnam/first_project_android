@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -35,14 +34,10 @@ public class MyFragment extends DialogFragment {
     private final MainActivity mainActivity;
     private final boolean hasAccessToInternet;
     private MyClickListener myClickListener;
-    private String selectedCategory;
-    private String[] categories = {"main"};
     private MyCallBack mcb;
-    public MyFragment(MainActivity activity, boolean hasAccessToInternet, String category) {
+    public MyFragment(MainActivity activity, boolean hasAccessToInternet) {
         this.mainActivity = activity;
         this.hasAccessToInternet = hasAccessToInternet;
-        if (category != null)
-            categories = category.split("#");
     }
 
     @NonNull
@@ -106,7 +101,7 @@ public class MyFragment extends DialogFragment {
 
         buttonOk.setOnClickListener(view1 -> {
             myClickListener.ok_clicked(wordEdit.getText().toString(), meaningEdit.getText().
-                    toString(), selectedCategory);
+                    toString());
             dismiss();
         });
         Button cancel = view.findViewById(R.id.cancel_button);
@@ -125,6 +120,6 @@ public class MyFragment extends DialogFragment {
     }
 
     public interface MyClickListener {
-        void ok_clicked(String word, String meaning, String category);
+        void ok_clicked(String word, String meaning);
     }
 }

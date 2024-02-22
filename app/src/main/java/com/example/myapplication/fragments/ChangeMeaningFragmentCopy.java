@@ -17,7 +17,7 @@ import androidx.fragment.app.DialogFragment;
 import com.example.myapplication.R;
 
 public class ChangeMeaningFragmentCopy extends DialogFragment {
-    private String wordString,meaningString;
+    private final String wordString,meaningString;
     private MyClickListener2 myClickListener2;
     public ChangeMeaningFragmentCopy(String wordString, String meaningString) {
         this.wordString = wordString;

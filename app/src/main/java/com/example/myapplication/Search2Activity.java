@@ -1,8 +1,8 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,65 +17,62 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Database.MyRoomDataBase;
-import com.example.myapplication.fragments.AddMeaningSomethingElse;
-import com.example.myapplication.fragments.AskMeaningFragment;
-import com.example.myapplication.fragments.ChangeMeaningFragment;
 import com.example.myapplication.fragments.ListFragment;
 import com.example.myapplication.fragments.MeaningFragment;
-import com.example.myapplication.fragments.MyFragment;
 import com.example.myapplication.myword.Word;
 
 import org.chromium.net.UrlRequest;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Search2Activity extends AppCompatActivity implements MyFragment.MyClickListener,
+public class Search2Activity extends AppCompatActivity implements
         MeaningFragment.ListenerOfClas, ProductAdapter.ClickListener,
-        ChangeMeaningFragment.MyClickListener2, AskMeaningFragment.TheListener,
         ListFragment.DoTheAction {
-    private RecyclerView recyclerView;
     public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
     private List<Word> words;
     private ArrayList<Word> currentWord;
-    private MyRoomDataBase roomDataBase;
     private ProductAdapter adapter;
     private CronetApplication cronetApplication;
-    private final ArrayList<Integer> removed = new ArrayList<>(100);
-    private Handler handler;
     private TextToSpeech tts;
     private boolean isSuccess = false;
-    private Word currentViewWord;
-    private String category = "main";
-    private String currentCategory = "main";
-    private Intent i2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            category = getIntent().getExtras().getString("category");
-        } catch (NullPointerException e) {
-            category = "main";
-        }
-        if (category == null || category.equals("nothing")){
-            category = "main";
-        }
-        i2 = getIntent();
+        Intent i2 = getIntent();
         String startingLetter = i2.getStringExtra("starting_word");
         tts = new TextToSpeech(this,i -> {
             if (i == TextToSpeech.SUCCESS) isSuccess = true;
         });
-        handler = new Handler();
         cronetApplication = new CronetApplication(this);
         cronetApplication.onCreate();
         setContentView(R.layout.activity_main);
-        roomDataBase = MyRoomDataBase.getInstance(this);
-        words = roomDataBase.mainDataAccess().getAll();
-        currentCategory = i2.getStringExtra("category");
+        AssetManager assetManager = getAssets();
+        words = new ArrayList<>(500);
+        Log.d("where_I_reach 63", "onCreate: " + "search2");
+        try {
+            InputStream inputStream = assetManager.open("result.txt");
+            InputStreamReader isr = new InputStreamReader(inputStream);
+            BufferedReader br = new BufferedReader(isr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] lineSplit = line.split(": " , 2);
+                if (lineSplit.length > 1) {
+                    String word = lineSplit[0];
+                    String meaning = lineSplit[1];
+                    Word word1 = new Word(word, "nothing",0,0,"");
+                    word1.setInternetMeaning(meaning);
+                    words.add(word1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        ImageButton ib = findViewById(R.id.click_button);
-        ib.setOnClickListener(view1 -> addNewWord());
         EditText input = findViewById(R.id.search_edit_text);
         ImageButton goToSetting = findViewById(R.id.bring_menu);
         input.addTextChangedListener(new TextWatcher() {
@@ -96,7 +93,7 @@ public class Search2Activity extends AppCompatActivity implements MyFragment.MyC
         });
         currentWord = new ArrayList<>();
         currentWord.addAll(words);
-        recyclerView = findViewById(R.id.rec);
+        RecyclerView recyclerView = findViewById(R.id.rec);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ProductAdapter(this, currentWord,false);
@@ -105,7 +102,7 @@ public class Search2Activity extends AppCompatActivity implements MyFragment.MyC
         input.setText(startingLetter);
     }
 
-    private void openSettingFragment() {
+    private void openSettingFragment() {// TODO implement this method
         ArrayList<String> options = new ArrayList<>();
         options.add("first");
         options.add("second");
@@ -117,34 +114,11 @@ public class Search2Activity extends AppCompatActivity implements MyFragment.MyC
 
     }
 
-    private void addNewWord() {
-        Log.i("tag tag", String.valueOf(currentWord.size()));
-//        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
-//        boolean state = (netInfo == null);
-//        MyFragment myFragment = new MyFragment(this, !state, currentCategory);
-//        myFragment.show(getSupportFragmentManager(), "example");
-    }
-
 
     private void openFragment(Word word) {
         MeaningFragment meaningFragment = new MeaningFragment(word.getWordItself(),
                 word.getMeaning(), word.getNumber());
         meaningFragment.show(getSupportFragmentManager(), "my fragment");
-    }
-
-    @Override
-    public void ok_clicked(String word, String meaning,String category) {
-        Word newWord = new Word(word, meaning, 0, words.size(),currentCategory);
-        if(!FunctionsStatic.internet_meaning.startsWith("a#"))
-            newWord.setInternetMeaning(FunctionsStatic.internet_meaning);
-        FunctionsStatic.internet_meaning = "a##";
-        roomDataBase.mainDataAccess().insert(newWord);
-        words.add(newWord);
-        currentWord.add(newWord);
-        adapter.notifyItemInserted(currentWord.size() - 1);
-        if (currentCategory == null) {
-            Toast.makeText(this, "some null category", Toast.LENGTH_LONG).show();
-        }
     }
 
 
@@ -153,7 +127,6 @@ public class Search2Activity extends AppCompatActivity implements MyFragment.MyC
         for (Word word1 : words) {
             if (word1.getWordItself().equals(word)) {
                 word1.increaseNumber();
-                roomDataBase.mainDataAccess().update(word1.id, word1.wordItself, word1.meaning, word1.getNumber());
                 break;
             }
         }
@@ -166,12 +139,6 @@ public class Search2Activity extends AppCompatActivity implements MyFragment.MyC
 
     @Override
     public void editWord(int index) {
-        int minus = 0;
-        for (Integer i : removed) {
-            if (index >= i)
-                minus++;
-        }
-        index -= minus;
         String stringOfWord = words.get(index).wordItself;
 //        ChangeMeaningFragment changeMeaningFragment = new ChangeMeaningFragment(words.
 //                get(index).wordItself, words.get(index).meaning, words.get(index));
@@ -190,14 +157,8 @@ public class Search2Activity extends AppCompatActivity implements MyFragment.MyC
 
     @Override
     public void clickWord(int index) {
-        int minus = 0;
-        for (Integer i : removed) {
-            if (index >= i)
-                minus++;
-        }
-        index -= minus;
         Word currentWord = words.get(index);
-        currentViewWord = currentWord;
+        Log.d("word_index", "clickWord: " + currentWord.wordItself);
         Intent i = new Intent(Search2Activity.this, MeaningActivity.class);
         if(currentWord.getInternetMeaning().startsWith("nothing")) {
             MyCallBack mcb = new MyCallBack() {
@@ -212,9 +173,6 @@ public class Search2Activity extends AppCompatActivity implements MyFragment.MyC
                         i.putExtra("word_id", currentWord.id);
                         i.putExtra("number_of", currentWord.getNumber());
                         i.putExtra("category",currentWord.getCategory());// temporary ;need to be changed
-                        handler.post(() -> {
-                            roomDataBase.mainDataAccess().update(currentViewWord.id,meaning);//saves unsaved stage
-                        });
                         FunctionsStatic.internet_meaning = meaning;
                         MyHolder.idOfWord = currentWord.id;
                         MyHolder.delta = 0;
@@ -253,45 +211,7 @@ public class Search2Activity extends AppCompatActivity implements MyFragment.MyC
 
     @Override
     public int getNumber() {
-        return removed.size();
-    }
-
-    @Override
-    public void btn_click_change(String newMeaning, Word word1, int index) {
-        if (index == -1 || word1 == null) {
-            index = words.size();
-            String[] meaning = newMeaning.split("@");
-            if (meaning.length >= 2) {
-                word1 = new Word(meaning[0], meaning[1], 0, index,this.category);
-                currentWord.add(word1);
-                words.add(word1);
-                adapter.notifyItemInserted(index);
-            }
-            if(! FunctionsStatic.internet_meaning.startsWith("a#") && word1 != null)
-                word1.setInternetMeaning(FunctionsStatic.internet_meaning);
-            roomDataBase.mainDataAccess().insert(word1);
-            return;
-        }
-        word1.meaning = newMeaning;
-        roomDataBase.mainDataAccess().update(word1.id, word1.wordItself, newMeaning, word1.getNumber());
-        int minus = 0;
-        for (Integer i : removed) {
-            if (index >= i)
-                minus++;
-        }
-        index -= minus;
-        adapter.notifyItemChanged(index);
-    }
-
-    @Override
-    public void addWord(String word, String meaning) {
-        if (meaning == null || word == null) {
-            Toast.makeText(this, "some error!", Toast.LENGTH_LONG).show();
-        } else if (meaning.startsWith("something els")) {
-            AddMeaningSomethingElse meaningSomethingElse = new AddMeaningSomethingElse(word);
-            meaningSomethingElse.show(getSupportFragmentManager(), "no tag");
-        } else
-            ok_clicked(word, meaning,"no_change");
+        return 0;
     }
 
     @Override
@@ -302,7 +222,9 @@ public class Search2Activity extends AppCompatActivity implements MyFragment.MyC
     @Override
     protected void onResume() {
         super.onResume();
-        // To do
+        currentWord.clear();
+        currentWord.addAll(words);
+        adapter.notifyDataSetChanged();
     }
 
     @Override

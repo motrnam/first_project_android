@@ -18,7 +18,8 @@ import com.example.myapplication.R;
 import com.example.myapplication.myword.Word;
 
 public class ChangeMeaningFragment extends DialogFragment {
-    private String wordString,meaningString;
+    private final String wordString;
+    private final String meaningString;
     private MyClickListener2 myClickListener2;
     private final Word word;
     public ChangeMeaningFragment(String wordString, String meaningString,Word word) {

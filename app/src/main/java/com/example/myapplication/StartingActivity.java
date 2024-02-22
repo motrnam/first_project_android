@@ -16,8 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.Database.MainDataAccess;
 import com.example.myapplication.Database.MyRoomDataBase;
+import com.example.myapplication.fragments.AboutFragment;
 import com.example.myapplication.fragments.AddCategory;
-import com.example.myapplication.fragments.AddWordInStarting;
 import com.example.myapplication.fragments.AskMeaningFragment;
 import com.example.myapplication.fragments.CategoryAdapter;
 import com.example.myapplication.fragments.MyCategoryFragment;
@@ -31,8 +31,7 @@ import java.util.List;
 import java.util.Random;
 
 public class StartingActivity extends AppCompatActivity implements AddCategory.
-        MyClickListenerAddCategory , CategoryAdapter.MyClickListener ,
-        AddWordInStarting.MyClickListener , AskMeaningFragment.TheListener {
+        MyClickListenerAddCategory , CategoryAdapter.MyClickListener {
     LayoutInflater inflater;
     ArrayList<String> categories = new ArrayList<>();
     String categoryString = "";
@@ -41,7 +40,7 @@ public class StartingActivity extends AppCompatActivity implements AddCategory.
     public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
     private MainDataAccess mainDataAccess;
     private CronetApplication cronetApplication;
-    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +70,7 @@ public class StartingActivity extends AppCompatActivity implements AddCategory.
         });
         LinearLayout add = findViewById(R.id.linearLayoutStart);
         addButtons(add);
-        sharedPreferences = getSharedPreferences("my_shared", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("my_shared", MODE_PRIVATE);
         categoryString = sharedPreferences.getString("category", "main");
         String[] categoryArray = categoryString.split("#");
         Collections.addAll(categories, categoryArray);
@@ -82,13 +81,8 @@ public class StartingActivity extends AppCompatActivity implements AddCategory.
     private void addButtons(LinearLayout layout) {
         inflater = LayoutInflater.from(this);
         View view = inflater.inflate(R.layout.card_view_in_first_page, layout, false);
-        view.setOnClickListener(view1 -> addClicked());
-        TextView textView = view.findViewById(R.id.description);
-        textView.setText(R.string.add_word);
-        layout.addView(view);
-        view = inflater.inflate(R.layout.card_view_in_first_page, layout, false);
         view.setOnClickListener(view1 -> addCategory());
-        textView = view.findViewById(R.id.description);
+        TextView textView = view.findViewById(R.id.description);
         textView.setText(R.string.add_category);
         layout.addView(view);
         view = inflater.inflate(R.layout.card_view_in_first_page, layout, false);
@@ -110,14 +104,8 @@ public class StartingActivity extends AppCompatActivity implements AddCategory.
 
 
 
-    private void addClicked() {
-        boolean hasAccessToInternet = true; // needs to be implemented
-        AddWordInStarting addWordInStarting = new AddWordInStarting(this, hasAccessToInternet, categoryString);
-        addWordInStarting.show(getSupportFragmentManager(), "add word");
-    }
-
     private void addCategory(){
-        AddCategory addCategory = new AddCategory(categoryString);
+        AddCategory addCategory = new AddCategory();
         addCategory.show(getSupportFragmentManager(),"add category");
     }
 
@@ -199,7 +187,14 @@ public class StartingActivity extends AppCompatActivity implements AddCategory.
     }
 
     private void about(){
-        Toast.makeText(this,"about",Toast.LENGTH_LONG).show();
+        AboutFragment aboutFragment = new AboutFragment();
+        aboutFragment.show(getSupportFragmentManager(),"about");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        allWords = mainDataAccess.getAll();
     }
 
     @Override
@@ -208,7 +203,9 @@ public class StartingActivity extends AppCompatActivity implements AddCategory.
             Toast.makeText(this, "Category already exists", Toast.LENGTH_LONG).show();
         } else {
             categoryString = "";
-            for (String s : categories) categoryString += (s + "#");
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String s : categories) stringBuilder.append(s).append("#");
+            categoryString = stringBuilder.toString();
             categories.add(category);
             categoryString += category;
             SharedPreferences sharedPreferences = getSharedPreferences("my_shared", MODE_PRIVATE);
@@ -229,36 +226,4 @@ public class StartingActivity extends AppCompatActivity implements AddCategory.
         startActivity(i);
     }
 
-    @Override
-    public void ok_clicked(String word, String meaning, String category) {
-        Word word1 = new Word(word,meaning,0,0,"main");
-        for (Word word2 : allWords){
-            if (word2.getWordItself().equals(word)){
-                Toast.makeText(this,"Word already exists",Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
-        mainDataAccess.insert(word1);
-        allWords.add(word1);
-        Toast.makeText(this,"Word " + word1.getWordItself() +
-                " added successfully",Toast.LENGTH_LONG).show();
-    }
-
-    public CronetApplication getCronetApplication() {
-        return cronetApplication;
-    }
-
-
-    @Override
-    public void addWord(String word, String meaning) {
-        for (Word word1 : allWords){
-            if (word1.getWordItself().equals(word)){
-                Toast.makeText(this,"Word already exists",Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
-        Word word1 = new Word(word,meaning,0,0,"main");
-        mainDataAccess.insert(word1);
-        allWords.add(word1);
-    }
 }

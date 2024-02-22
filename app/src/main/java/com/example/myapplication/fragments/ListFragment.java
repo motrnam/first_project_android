@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class ListFragment extends DialogFragment {
 
-    private ArrayList<String> strings;
+    private final ArrayList<String> strings;
     private DoTheAction action;
 
     public ListFragment(ArrayList<String> strings) {

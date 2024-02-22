@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         MeaningFragment.ListenerOfClas, ProductAdapter.ClickListener,
         ChangeMeaningFragment.MyClickListener2, AskMeaningFragment.TheListener,
         ListFragment.DoTheAction {
-    private SharedPreferences sharedPreferences;
-    private RecyclerView recyclerView;
     public final static String PATH_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
     public Executor executor;
     private List<Word> words;
@@ -56,25 +54,19 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     private boolean isSuccess = false;
     private Word currentViewWord;
     private String category = "main";
-    private String currentCategory = "main";
-    private boolean isSearch = false;
-    private Intent i2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String state = getIntent().getStringExtra("state");
-        sharedPreferences = getSharedPreferences("my_shared", MODE_PRIVATE);
+        String state ;
+        SharedPreferences sharedPreferences = getSharedPreferences("my_shared", MODE_PRIVATE);
         category = getIntent().getExtras().getString("category");
-        if (category == null || category.equals("nothing")){
+        if (category == null || "nothing".equals(category)){
             sharedPreferences.edit().putString("category","main").apply();
             category = "main";
         }
-        i2 = getIntent();
+        Intent i2 = getIntent();
         state = i2.getStringExtra("state");
-        if (state != null && state.equals("search")) {
-            isSearch = true;
-        }
         String startingLetter = i2.getStringExtra("starting_word");
         tts = new TextToSpeech(this,i -> {
             if (i == TextToSpeech.SUCCESS) isSuccess = true;
@@ -86,9 +78,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         executor = Executors.newSingleThreadExecutor();
         setContentView(R.layout.activity_main);
         roomDataBase = MyRoomDataBase.getInstance(this);
-        currentCategory = i2.getStringExtra("category");
         if (state != null && !state.equals("search")) {
-            words = roomDataBase.mainDataAccess().getWordsByCategory(currentCategory);
+            words = roomDataBase.mainDataAccess().getWordsByCategory(category);
         }
 
         ImageButton ib = findViewById(R.id.click_button);
@@ -113,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         });
         currentWord = new ArrayList<>();
         currentWord.addAll(words);
-        recyclerView = findViewById(R.id.rec);
+        RecyclerView recyclerView = findViewById(R.id.rec);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ProductAdapter(this, currentWord);
@@ -121,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         recyclerView.setAdapter(adapter);
         goToSetting.setOnClickListener(this::onClick);
         input.setText(startingLetter);
+        ProductAdapter.canDelete = true;
     }
 
     private void openSettingFragment() {
@@ -138,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
             return;
         }
         currentWord.clear();
-        Log.d("word_word", "updateWord: " + category);
+//        Log.d("word_word", "updateWord: " + category);
         for (Word word : words) {
             if (word.category != null && word.getWordItself().startsWith(input)) {
                 currentWord.add(word);
@@ -152,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         Log.i("tag tag", String.valueOf(currentWord.size()));
         NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
         boolean state = (netInfo == null);
-        MyFragment myFragment = new MyFragment(this, !state, currentCategory);
+        MyFragment myFragment = new MyFragment(this, !state);
         myFragment.show(getSupportFragmentManager(), "example");
     }
 
@@ -168,8 +160,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     }
 
     @Override
-    public void ok_clicked(String word, String meaning,String category) {
-        Word newWord = new Word(word, meaning, 0, words.size(),currentCategory);
+    public void ok_clicked(String word, String meaning) {
+        Word newWord = new Word(word, meaning, 0, words.size(),this.category);
         if(!FunctionsStatic.internet_meaning.startsWith("a#"))
             newWord.setInternetMeaning(FunctionsStatic.internet_meaning);
         FunctionsStatic.internet_meaning = "a##";
@@ -177,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         words.add(newWord);
         currentWord.add(newWord);
         adapter.notifyItemInserted(currentWord.size() - 1);
-        if (currentCategory == null) {
+        if (this.category == null) {
             Toast.makeText(this, "some null category", Toast.LENGTH_LONG).show();
         }
     }
@@ -222,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
 //                get(index).wordItself, words.get(index).meaning, words.get(index));
 //        changeMeaningFragment.show(getSupportFragmentManager(), "my bag");
         if (isSuccess){
-            tts.speak(stringOfWord,TextToSpeech.QUEUE_FLUSH,null);
+            tts.speak(stringOfWord,TextToSpeech.QUEUE_FLUSH,null,null);
         }else {
             Toast.makeText(this,"unable to do the the task",Toast.LENGTH_LONG).show();
         }
@@ -332,11 +324,11 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
     public void addWord(String word, String meaning) {
         if (meaning == null || word == null) {
             Toast.makeText(this, "some error!", Toast.LENGTH_LONG).show();
-        } else if (meaning.startsWith("something els")) {
+        } else if (meaning.startsWith("something else")) {
             AddMeaningSomethingElse meaningSomethingElse = new AddMeaningSomethingElse(word);
             meaningSomethingElse.show(getSupportFragmentManager(), "no tag");
         } else
-            ok_clicked(word, meaning,"no_change");
+            ok_clicked(word, meaning);
     }
 
     @Override
@@ -357,12 +349,6 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyClic
         super.onDestroy();
     }
 
-    public void updateWord(String newMeaning,boolean state){
-        if (currentViewWord != null){
-            roomDataBase.mainDataAccess().update(currentViewWord.id,currentViewWord.
-                    getWordItself(),newMeaning,currentViewWord.getNumber());
-        }
-    }
 
     private void onClick(View view) {
         openSettingFragment();
